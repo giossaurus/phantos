@@ -42,7 +42,9 @@ if libarchive.found()
         'fakefs.c',
         '../util/fchdir.c',
     ]
-    fakefsify = executable('fakefsify', fakefsify_src, dependencies: [libarchive], link_with: [libfakefs], include_directories: [includes])
+    # fakefs.c composes names with CoreFoundation on Apple platforms.
+    corefoundation = dependency('appleframeworks', modules: ['CoreFoundation'], required: host_machine.system() == 'darwin')
+    fakefsify = executable('fakefsify', fakefsify_src, dependencies: [libarchive, corefoundation], link_with: [libfakefs], include_directories: [includes])
     custom_target('unfakefsify',
         build_by_default: true,
         command: ['ln', '-sf', 'fakefsify', '@OUTPUT@'],

@@ -215,5 +215,9 @@ if not meson.is_cross_build()
     test('float80', float80_test)
 endif
 
+if libarchive.found()
+    test('fakefsify-utf8', find_program('tests/fakefsify-utf8.bash'), args: [fakefsify])
+endif
+
 e2e_test = find_program('tests/e2e/e2e.bash')
 test('e2e', e2e_test, args: ['-y'], timeout: 180)

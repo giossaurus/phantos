@@ -1,12 +1,17 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <locale.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <archive.h>
 #include <archive_entry.h>
+#if defined(__APPLE__)
+// Before misc.h, whose attribute macros break the SDK's headers.
+#include <CoreFoundation/CoreFoundation.h>
+#endif
 
 #define ISH_INTERNAL
 #include "fs/fake-db.h"
@@ -17,6 +22,29 @@
 
 #ifndef MAX_PATH
 #define MAX_PATH 4096
+#endif
+
+#if defined(__APPLE__)
+// libarchive decomposes names on Apple platforms (NFD, to match HFS+). Linux names are bytes,
+// and archives carry them composed, so compose them back before they're stored.
+static const char *composed(const char *name, char buf[MAX_PATH]) {
+    if (name == NULL)
+        return NULL;
+    CFStringRef string = CFStringCreateWithCString(NULL, name, kCFStringEncodingUTF8);
+    if (string == NULL)
+        return name; // not UTF-8, keep the bytes
+    CFMutableStringRef normalized = CFStringCreateMutableCopy(NULL, 0, string);
+    CFStringNormalize(normalized, kCFStringNormalizationFormC);
+    bool converted = CFStringGetCString(normalized, buf, MAX_PATH, kCFStringEncodingUTF8);
+    CFRelease(normalized);
+    CFRelease(string);
+    return converted ? buf : name;
+}
+#else
+static const char *composed(const char *name, char buf[MAX_PATH]) {
+    (void) buf;
+    return name;
+}
 #endif
 
 // I have a weird way of error handling
@@ -77,7 +105,26 @@ static const char *schema = Q(
     pragma user_version=3;
 );
 
+static bool import_archive(const char *archive_path, const char *fs, struct fakefsify_error *err_out, struct progress p);
+
 bool fakefs_import(const char *archive_path, const char *fs, struct fakefsify_error *err_out, struct progress p) {
+    // libarchive converts names to the current locale's charset, and in the app's C locale a name
+    // that isn't ASCII (Alpine ships a certificate named Főtanúsítvány) stops the import. Archives
+    // name things in UTF-8, which is also what Linux programs expect, so read them in a UTF-8
+    // locale on this thread only.
+    locale_t utf8 = newlocale(LC_CTYPE_MASK, "C.UTF-8", (locale_t) 0);
+    if (utf8 == (locale_t) 0)
+        utf8 = newlocale(LC_CTYPE_MASK, "UTF-8", (locale_t) 0);
+    locale_t previous = utf8 != (locale_t) 0 ? uselocale(utf8) : (locale_t) 0;
+    bool imported = import_archive(archive_path, fs, err_out, p);
+    if (utf8 != (locale_t) 0) {
+        uselocale(previous);
+        freelocale(utf8);
+    }
+    return imported;
+}
+
+static bool import_archive(const char *archive_path, const char *fs, struct fakefsify_error *err_out, struct progress p) {
     int err = mkdir(fs, 0777);
     if (err < 0)
         POSIX_ERR();
@@ -122,10 +169,12 @@ bool fakefs_import(const char *archive_path, const char *fs, struct fakefsify_er
     // do actual shit
     struct archive_entry *entry;
     while ((err = archive_read_next_header(archive, &entry)) == ARCHIVE_OK) {
+        char name_buf[MAX_PATH];
+        const char *name = composed(archive_entry_pathname(entry), name_buf);
         char entry_path[MAX_PATH];
-        if (!path_normalize(archive_entry_pathname(entry), entry_path)) {
+        if (!path_normalize(name, entry_path)) {
             // Avoid pwnage
-            fprintf(stderr, "warning: skipped possible path traversal %s\n", archive_entry_pathname(entry));
+            fprintf(stderr, "warning: skipped possible path traversal %s\n", name);
             continue;
         }
         if (!progress_update(&p, (double) archive_filter_bytes(archive, -1) / archive_bytes, entry_path))
@@ -133,7 +182,8 @@ bool fakefs_import(const char *archive_path, const char *fs, struct fakefsify_er
         if (strcmp(entry_path, "") == 0)
             archive_has_root = true;
 
-        const char *hardlink = archive_entry_hardlink(entry);
+        char hardlink_buf[MAX_PATH];
+        const char *hardlink = composed(archive_entry_hardlink(entry), hardlink_buf);
         if (hardlink) {
             char hardlink_path[MAX_PATH];
             if (!path_normalize(hardlink, hardlink_path)) {
@@ -196,8 +246,11 @@ bool fakefs_import(const char *archive_path, const char *fs, struct fakefsify_er
                     ARCHIVE_ERR(archive);
                 break;
 
-            case AE_IFLNK:
-                err = (int) write(fd, archive_entry_symlink(entry), strlen(archive_entry_symlink(entry)));
+            case AE_IFLNK: {
+                char target_buf[MAX_PATH];
+                const char *target = composed(archive_entry_symlink(entry), target_buf);
+                err = (int) write(fd, target, strlen(target));
+            }
                 if (err < 0)
                     POSIX_ERR();
                 break;
