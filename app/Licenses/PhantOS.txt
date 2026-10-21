@@ -1,0 +1,9 @@
+PhantOS is a fork of iSH, the Linux shell for iOS by Theodore Dubois, Saagar Jha and the iSH contributors.
+
+PhantOS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3, with the additional terms in the iSH entry of this list. It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+The complete source code of PhantOS, including every change made to iSH, is at:
+https://github.com/giossaurus/ish-gio
+
+The Linux filesystem it ships is built from:
+https://github.com/giossaurus/phantos-roots

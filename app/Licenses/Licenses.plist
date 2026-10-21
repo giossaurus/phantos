@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>Name</key>
+		<string>PhantOS</string>
+		<key>Detail</key>
+		<string>giossaurus · GPLv3</string>
+		<key>File</key>
+		<string>PhantOS.txt</string>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>iSH</string>
+		<key>Detail</key>
+		<string>Theodore Dubois, Saagar Jha and contributors · GPLv3</string>
+		<key>File</key>
+		<string>iSH.txt</string>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>hterm</string>
+		<key>Detail</key>
+		<string>The Chromium OS Authors · BSD 3-Clause</string>
+		<key>File</key>
+		<string>hterm.txt</string>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>libarchive</string>
+		<key>Detail</key>
+		<string>Tim Kientzle and contributors · BSD 2-Clause</string>
+		<key>File</key>
+		<string>libarchive.txt</string>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>Alpine Linux</string>
+		<key>Detail</key>
+		<string>Alpine Linux and package authors · per package</string>
+		<key>File</key>
+		<string>Alpine.txt</string>
+	</dict>
+</array>
+</plist>

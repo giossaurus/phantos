@@ -206,8 +206,8 @@ void SyncHostname(void) {
     if ([NSUserDefaults.standardUserDefaults integerForKey:kSkipStartupMessage] >= 1)
         return;
     if (!FsIsManaged()) {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Install iSH’s built-in APK?"
-                                                                       message:@"iSH now includes the APK package manager, but it must be manually activated."
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Install PhantOS’s built-in APK?"
+                                                                       message:@"PhantOS includes the APK package manager, but it must be manually activated."
                                                                 preferredStyle:UIAlertControllerStyleAlert];
         [alert addAction:[UIAlertAction actionWithTitle:@"Show me how"
                                                   style:UIAlertActionStyleDefault
@@ -257,7 +257,7 @@ void NetworkReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
         [UIView setAnimationsEnabled:NO];
 
 #if !ISH_LINUX
-    NSString *ishVersion = [NSString stringWithFormat:@"iSH %@ (%@)",
+    NSString *ishVersion = [NSString stringWithFormat:@"PhantOS %@ (%@)",
                          [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
                          [NSBundle.mainBundle objectForInfoDictionaryKey:(NSString *) kCFBundleVersionKey]];
     extern const char *proc_ish_version;
