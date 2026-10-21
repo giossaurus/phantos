@@ -1,69 +1,128 @@
-# [iSH](https://ish.app)
+# PhantOS
 
-[![Build Status](https://github.com/ish-app/ish/actions/workflows/ci.yml/badge.svg)](https://github.com/ish-app/ish/actions)
-[![goto counter](https://img.shields.io/github/search/ish-app/ish/goto.svg)](https://github.com/ish-app/ish/search?q=goto)
-[![fuck counter](https://img.shields.io/github/search/ish-app/ish/fuck.svg)](https://github.com/ish-app/ish/search?q=fuck)
-[![shit counter](https://img.shields.io/github/search/ish-app/ish/shit.svg)](https://github.com/ish-app/ish/search?q=shit)
+A Linux shell for iPhone and iPad. PhantOS runs Alpine Linux through usermode x86 emulation, draws the terminal with Ghostty, and wraps it in a Liquid Glass interface.
 
-<p align="center">
-<a href="https://ish.app">
-<img src="https://ish.app/assets/github-readme.png">
-</a>
-</p>
+PhantOS is a fork of [iSH](https://github.com/ish-app/ish). The emulator and the Linux layer come from iSH; the terminal, the interface and the shell setup are new.
 
-A project to get a Linux shell running on iOS, using usermode x86 emulation and syscall translation.
+## What PhantOS adds
 
-For the current status of the project, check the issues tab, and the commit logs.
+**Ghostty terminal.** The terminal is drawn by Ghostty's engine (libghostty, through [GhosttyKit](https://github.com/Lakr233/libghostty-spm)) instead of hterm in a web view. Text is sharp at any size, and colors follow Ghostty's themes.
 
-- [App Store page](https://apps.apple.com/us/app/ish-shell/id1436902243)
-- [TestFlight beta](https://testflight.apple.com/join/97i7KM8O)
-- [Discord server](https://discord.gg/HFAXj44)
-- [Wiki with help and tutorials](https://github.com/ish-app/ish/wiki)
-- [README中文](https://github.com/ish-app/ish/blob/master/README_ZH.md) (如若未能保持最新，请提交PR以更新)
+**Tabs.** Each tab is its own shell session. Tap + to open one. Hold a tab to rename it or close it. Exiting a shell closes its tab. A tab is named after the directory its shell is in, unless you rename it.
 
-# Hacking
+**Liquid Glass.** The tab row and the extra keys above the keyboard are glass buttons, sized to Apple's 44 point minimum, with SF Symbols that stay readable in light and dark mode.
 
-This project has a git submodule, make sure to clone with `--recurse-submodules` or run `git submodule update --init` after cloning.
+**Hardware keyboard shortcuts, as in Ghostty.**
 
-You'll need these things to build the project:
+| Shortcut | Action |
+| --- | --- |
+| ⌘T | New tab |
+| ⌘W | Close tab |
+| ⌘1 to ⌘9 | Go to tab |
+| ⌘⇧[ and ⌘⇧] | Previous and next tab |
 
- - Python 3
-   + Meson (`pip3 install meson`)
- - Ninja
- - Clang and LLD (on mac, `brew install llvm`, on linux, `sudo apt install clang lld` or `sudo pacman -S clang lld` or whatever)
- - sqlite3 (this is so common it may already be installed on linux and is definitely already installed on mac. if not, do something like `sudo apt install libsqlite3-dev`)
- - libarchive (`brew install libarchive`, `sudo port install libarchive`, `sudo apt install libarchive-dev`) TODO: bundle this dependency
+**Themes.** PhantOS (the default, in light and dark), Dracula, Catppuccin (Latte in light mode, Mocha in dark mode) and Cursor Dark, alongside the themes iSH had. A theme sets the background, text, cursor and all 16 ANSI colors.
 
-## Build for iOS
+**zsh by default.** The shell is zsh with Oh My Zsh and Powerlevel10k, set up to start quickly under emulation. In the emulator, the first start takes about 0.85 seconds and later ones about 0.75 seconds.
 
-Open the project in Xcode, open iSH.xcconfig, and change `ROOT_BUNDLE_IDENTIFIER` to something unique. You'll also need to update the development team ID in the project (not target!) build settings. Then click Run. There are scripts that should do everything else automatically. If you run into any problems, open an issue and I'll try to help.
+**Session banner.** Every new session opens with a small PhantOS ghost and a summary of the system: user and host, Alpine and zsh versions, uptime and installed packages. It fits a 40 column iPhone screen.
 
-## Build command line tool for testing
+**Neovim.** Neovim is the editor, with a small config and no plugin manager, so it opens in about 0.3 seconds. `vim`, `$EDITOR` and `$VISUAL` all open it, and yanks go to the iOS clipboard.
 
-To set up your environment, cd to the project and run `meson build` to create a build directory in `build`. Then cd to the build directory and run `ninja`.
+**Licenses & Credits.** Settings lists every component PhantOS ships, with its authors and full license text.
 
-To set up a self-contained Alpine linux filesystem, download the Alpine minirootfs tarball for i386 from the [Alpine website](https://alpinelinux.org/downloads/) and run `./tools/fakefsify`, with the minirootfs tarball as the first argument and the name of the output directory as the second argument. Then you can run things inside the Alpine filesystem with `./ish -f alpine /bin/sh`, assuming the output directory is called `alpine`. If `tools/fakefsify` doesn't exist for you in your build directory, that might be because it couldn't find libarchive on your system (see above for ways to install it.)
+## Requirements
 
-You can replace `ish` with `tools/ptraceomatic` to run the program in a real process and single step and compare the registers at each step. I use it for debugging. Requires 64-bit Linux 4.11 or later.
+- iOS 26 or later
+- Xcode 26 or later to build (developed with Xcode 27.1)
+
+## Building
+
+Clone with submodules:
+
+```sh
+git clone --recurse-submodules https://github.com/giossaurus/phantos.git
+```
+
+Install the build tools:
+
+```sh
+brew install meson ninja lld libarchive
+```
+
+Open `PhantOS.xcodeproj` and run the `PhantOS` scheme. To build under your own Apple account, change `ROOT_BUNDLE_IDENTIFIER` and `DEVELOPMENT_TEAM` in `app/iSH.xcconfig`.
+
+### The Linux filesystem
+
+The app bundles an Alpine root filesystem, built by [phantos-roots](https://github.com/giossaurus/phantos-roots). That repository adds zsh, the banner and Neovim to Alpine.
+
+By default the build downloads the root from `ROOTFS_URL` in `app/iSH.xcconfig`. To bundle a root you built yourself, run `./build.sh` in phantos-roots, then copy `app/Local.xcconfig.example` to `app/Local.xcconfig` and point `ROOTFS_FILE` at `out/appstore-apk.tar.gz`. `app/Local.xcconfig` stays out of git.
+
+The app imports the root the first time it opens. An installed copy keeps its filesystem, so delete and reinstall the app to try a new root.
+
+## Command line tool
+
+The emulator also builds as a command line program, which is handy for testing without a device:
+
+```sh
+meson setup build
+ninja -C build
+```
+
+Turn an Alpine root into a filesystem the emulator can use, and run a shell in it:
+
+```sh
+./build/tools/fakefsify appstore-apk.tar.gz alpine
+./build/ish -f alpine /bin/sh
+```
+
+`tools/fakefsify` is only built when meson finds libarchive.
+
+## Tests
+
+- **App:** the `PhantOSUITests` target, run from the `PhantOS` scheme. The tests cover the Ghostty terminal, tabs, themes, the banner, Settings and the licenses screen.
+- **Filesystem import:** `meson test -C build fakefsify-utf8` checks that file names that aren't ASCII import correctly.
+- **Root:** `./test.sh out/appstore-apk.tar.gz <ish build dir>` in phantos-roots boots the root in the emulator and checks the shell, the banner, Neovim and start-up time.
 
 ## Logging
 
-iSH has several logging channels which can be enabled at build time. By default, all of them are disabled. To enable them:
+Log channels are off by default. Enable them at build time:
 
-- In Xcode: Set the `ISH_LOG` setting in iSH.xcconfig to a space-separated list of log channels.
-- With Meson (command line tool for testing): Run `meson configure -Dlog="<space-separated list of log channels>"`.
+- In Xcode, set `ISH_LOG` in `app/iSH.xcconfig` to a space separated list of channels.
+- With meson, run `meson configure -Dlog="<channels>"`.
 
-Available channels:
+Channels:
 
-- `strace`: The most useful channel, logs the parameters and return value of almost every system call.
-- `instr`: Logs every instruction executed by the emulator. This slows things down a lot.
-- `verbose`: Debug logs that don't fit into another category.
-- Grep for `DEFAULT_CHANNEL` to see if more log channels have been added since this list was updated.
+- `strace`: the parameters and return value of almost every system call.
+- `instr`: every instruction the emulator runs. This slows things down a lot.
+- `verbose`: debug logs that fit no other channel.
 
-# A note on the interpreter
+Grep for `DEFAULT_CHANNEL` to find channels added since this list.
 
-Possibly the most interesting thing I wrote as part of iSH is the interpreter. It's not quite a JIT since it doesn't target machine code. Instead it generates an array of pointers to functions called gadgets, and each gadget ends with a tailcall to the next function; like the threaded code technique used by some Forth interpreters. The result is a speedup of roughly 3-5x compared to emulation using a simpler switch dispatch.
+## The interpreter
 
-Unfortunately, I made the decision to write nearly all of the gadgets in assembly language. This was probably a good decision with regards to performance (though I'll never know for sure), but a horrible decision with regards to readability, maintainability, and my sanity. The amount of bullshit I've had to put up with from the compiler/assembler/linker is insane. It's like there's a demon in there that makes sure my code is sufficiently deformed, and if not, makes up stupid reasons why it shouldn't compile. In order to stay sane while writing this code, I've had to ignore best practices in code structure and naming. You'll find macros and variables with such descriptive names as `ss` and `s` and `a`. Assembler macros nested beyond belief. And to top it off, there are almost no comments.
+The emulator comes from iSH, and its author describes it best: it isn't quite a JIT, since it doesn't produce machine code. It builds an array of pointers to small functions called gadgets, each ending with a tail call to the next, like the threaded code some Forth interpreters use. That runs roughly 3 to 5 times faster than a plain switch dispatch. Nearly all gadgets are written in assembly, with terse names and few comments, so read that part of the code with patience.
 
-So a warning: Long-term exposure to this code may cause loss of sanity, nightmares about GAS macros and linker errors, or any number of other debilitating side effects. This code is known to the State of California to cause cancer, birth defects, and reproductive harm.
+## Not done yet
+
+- Scrolling and text selection on the Ghostty terminal
+- Arrow keys in programs that switch to application cursor mode, such as vim
+- VoiceOver for the Ghostty terminal
+- Split panes on iPad
+- Moving the root to Alpine 3.22, which also packages fastfetch
+
+## Credits and license
+
+PhantOS is based on iSH by Theodore Dubois, Saagar Jha and the iSH contributors. Like iSH, it is licensed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html), with the additional terms in [LICENSE.IOS](LICENSE.IOS) that allow distribution through the App Store. See [LICENSE.md](LICENSE.md) for the details.
+
+PhantOS also includes:
+
+- [Ghostty](https://github.com/ghostty-org/ghostty) by Mitchell Hashimoto and contributors, MIT
+- [GhosttyKit](https://github.com/Lakr233/libghostty-spm) by Lakr233, MIT
+- [hterm](https://chromium.googlesource.com/apps/libapps) by the Chromium OS Authors, BSD 3-Clause
+- [libarchive](https://github.com/libarchive/libarchive) by Tim Kientzle and contributors, BSD 2-Clause
+- [zsh](https://www.zsh.org), [Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh), [Powerlevel10k](https://github.com/romkatv/powerlevel10k) and [Neovim](https://neovim.io), in the Linux filesystem
+- Color schemes from [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes), [Dracula](https://draculatheme.com) and [Catppuccin](https://catppuccin.com), MIT
+- [Alpine Linux](https://alpinelinux.org) packages, each under its own license
+
+The full texts are in `app/Licenses` and in the app under Settings, Licenses & Credits.

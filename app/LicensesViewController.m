@@ -39,7 +39,7 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     return @"PhantOS is free software under the GNU General Public License, version 3. "
-           @"Its source code is at github.com/giossaurus/ish-gio.";
+           @"Its source code is at github.com/giossaurus/phantos.";
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
