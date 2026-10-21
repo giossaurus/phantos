@@ -182,6 +182,24 @@
     [self attachScreenshotOf:app named:@"glass"];
 }
 
+- (void)testNoStrayPromptMarksAtStart {
+    XCUIApplication *app = [XCUIApplication new];
+    app.launchArguments = @[@"--ui-testing"];
+    [app launch];
+    XCUIElement *viewport = [self viewportIn:app];
+    XCTAssertTrue([self waitForElement:viewport valueContaining:@"❯" timeout:30], @"no shell prompt");
+    [NSThread sleepForTimeInterval:2];
+    // zsh marks a line left without a newline with "#" for root, then pads to the width it
+    // believes the screen has; a shell started at 80 columns on a 41-column iPhone left them behind.
+    XCTAssertFalse([viewport.value containsString:@"#"], @"%@", viewport.value);
+
+    // A new tab starts at the size of the screen it's on, too.
+    [app.buttons[@"New Tab"] tap];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"❯" timeout:30]);
+    [NSThread sleepForTimeInterval:2];
+    XCTAssertFalse([[self viewportIn:app].value containsString:@"#"], @"%@", [self viewportIn:app].value);
+}
+
 - (void)testSettingsHaveNoAlternateIcons {
     // The alternate icons were iSH's community art; PhantOS has the one icon.
     XCUIApplication *app = [self launchIntoSettings];
@@ -233,7 +251,7 @@
     // In UI testing mode the Ghostty surface exposes its visible rows here.
     XCUIElement *viewport = [[app descendantsMatchingType:XCUIElementTypeAny] matchingIdentifier:@"terminal.viewport"].firstMatch;
     XCTAssertTrue([viewport waitForExistenceWithTimeout:20], @"no Ghostty viewport");
-    XCTAssertTrue([self waitForElement:viewport valueContaining:@"#" timeout:30], @"no shell prompt");
+    XCTAssertTrue([self waitForElement:viewport valueContaining:@"❯" timeout:30], @"no shell prompt");
 
     [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.3)] tap];
     // The command line shows the unexpanded text, so only the shell's output contains ghostty-42.
@@ -248,7 +266,7 @@
 
     XCUIElement *viewport = [[app descendantsMatchingType:XCUIElementTypeAny] matchingIdentifier:@"terminal.viewport"].firstMatch;
     XCTAssertTrue([viewport waitForExistenceWithTimeout:20], @"no Ghostty viewport");
-    XCTAssertTrue([self waitForElement:viewport valueContaining:@"#" timeout:30], @"no shell prompt");
+    XCTAssertTrue([self waitForElement:viewport valueContaining:@"❯" timeout:30], @"no shell prompt");
 
     [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.3)] tap];
     // Let the keyboard settle the final grid before asking the tty.

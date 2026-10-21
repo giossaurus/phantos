@@ -105,6 +105,17 @@ static NSMapTable<NSUUID *, Terminal *> *terminalsByUUID;
     }
 }
 
+static NSString *const kLastColumnsKey = @"LastTerminalColumns";
+static NSString *const kLastRowsKey = @"LastTerminalRows";
+
++ (int)lastColumns {
+    return (int) [NSUserDefaults.standardUserDefaults integerForKey:kLastColumnsKey];
+}
+
++ (int)lastRows {
+    return (int) [NSUserDefaults.standardUserDefaults integerForKey:kLastRowsKey];
+}
+
 + (BOOL)usesGhostty {
     return ![NSUserDefaults.standardUserDefaults boolForKey:@"UseHterm"];
 }
@@ -116,6 +127,8 @@ static NSMapTable<NSUUID *, Terminal *> *terminalsByUUID;
         [weakSelf sendInput:data];
     };
     ghostty.onResize = ^(NSInteger cols, NSInteger rows) {
+        [NSUserDefaults.standardUserDefaults setInteger:cols forKey:kLastColumnsKey];
+        [NSUserDefaults.standardUserDefaults setInteger:rows forKey:kLastRowsKey];
         [weakSelf syncWindowSize];
     };
     ghostty.onTitle = ^(NSString *title) {

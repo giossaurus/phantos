@@ -21,6 +21,7 @@
 #include "kernel/task.h"
 #include "kernel/calls.h"
 #include "fs/devices.h"
+#include "fs/tty.h"
 
 // One shell, in one tab.
 @interface TerminalSession : NSObject
@@ -213,6 +214,13 @@
         return (int) PTR_ERR(tty);
     }
     self.sessionTerminal = terminal;
+    // Start the shell at the screen's size: at the default 80 columns, zsh pads its prompt for a
+    // wider screen than an iPhone's and leaves "#" marks behind once the real size arrives.
+    if (Terminal.lastColumns > 0) {
+        lock(&tty->lock);
+        tty_set_winsize(tty, (struct winsize_) {.col = Terminal.lastColumns, .row = Terminal.lastRows});
+        unlock(&tty->lock);
+    }
     NSString *stdioFile = [NSString stringWithFormat:@"/dev/pts/%d", tty->num];
     err = create_stdio(stdioFile.fileSystemRepresentation, TTY_PSEUDO_SLAVE_MAJOR, tty->num);
     if (err < 0)
