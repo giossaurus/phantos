@@ -104,6 +104,8 @@
 		497F6D5C254E609700C82F46 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = BB7D93822087C2890008DA78 /* main.c */; };
 		497F6D87254E62E100C82F46 /* libish.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB13F7DC200AD81D003D1C4D /* libish.a */; };
 		49FF844B2A06249F00850B7A /* ExceptionExfiltrator.m in Sources */ = {isa = PBXBuildFile; fileRef = 49FF844A2A06249F00850B7A /* ExceptionExfiltrator.m */; };
+		68D1339FECDB43A092693D26 /* GhosttyTerminalHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A2A9288ECAFF4C59045679 /* GhosttyTerminalHost.swift */; };
+		6DB107322003EAE3C34277F4 /* GhosttyTerminal in Frameworks */ = {isa = PBXBuildFile; productRef = 4C4EA1CB76DD117111BB8079 /* GhosttyTerminal */; };
 		BB0F552E239F8A790032A2A1 /* Icons.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB0F552D239F8A790032A2A1 /* Icons.plist */; };
 		BB10E5C9248DBAAC009C7A74 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB10E5C8248DBAA1009C7A74 /* libarchive.a */; };
 		BB10E5D0248DC21D009C7A74 /* Roots.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB10E5CF248DC21D009C7A74 /* Roots.storyboard */; };
@@ -427,6 +429,7 @@
 
 /* Begin PBXFileReference section */
 		0FC2383B2991FB82004C09EC /* mmx.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mmx.c; sourceTree = "<group>"; };
+		32A2A9288ECAFF4C59045679 /* GhosttyTerminalHost.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GhosttyTerminalHost.swift; sourceTree = "<group>"; };
 		408A2639236440F8008A4E81 /* iOSFS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iOSFS.m; sourceTree = "<group>"; };
 		408A263B23644102008A4E81 /* iOSFS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iOSFS.h; sourceTree = "<group>"; };
 		49087C13295DF0490058075B /* hook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hook.h; sourceTree = "<group>"; };
@@ -762,6 +765,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9C4FD7C7245C385170A56127 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6DB107322003EAE3C34277F4 /* GhosttyTerminal in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BB415919255EF9E300E0950C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1079,6 +1090,7 @@
 				BB88F4A4215476BA00A341FD /* iSH.entitlements */,
 				BB88F4912154760800A341FD /* FileProvider */,
 				BB41591D255EF9E300E0950C /* UITests */,
+				32A2A9288ECAFF4C59045679 /* GhosttyTerminalHost.swift */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -1570,6 +1582,7 @@
 			buildConfigurationList = BBEF192626806364001225BD /* Build configuration list for PBXNativeTarget "libiSHApp" */;
 			buildPhases = (
 				BBEF191A26806364001225BD /* Sources */,
+				9C4FD7C7245C385170A56127 /* Frameworks */,
 			);
 			buildRules = (
 				497A08BE29633FC100B323CF /* PBXBuildRule */,
@@ -1577,6 +1590,9 @@
 			dependencies = (
 			);
 			name = libiSHApp;
+			packageProductDependencies = (
+				4C4EA1CB76DD117111BB8079 /* GhosttyTerminal */,
+			);
 			productName = libiSH;
 			productReference = BBEF191E26806364001225BD /* libiSHApp.a */;
 			productType = "com.apple.product-type.library.static";
@@ -1694,6 +1710,9 @@
 				Base,
 			);
 			mainGroup = BB792B451F96D8E000FFB7A4;
+			packageReferences = (
+				5C5F371F3BE6A5394679844E /* XCRemoteSwiftPackageReference "libghostty-spm" */,
+			);
 			productRefGroup = BB792B511F96D90D00FFB7A4 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -2217,6 +2236,7 @@
 				496C7AB327CC734D005D7613 /* ThemesViewController.m in Sources */,
 				BB77636726E486A7008DB44A /* fakefs.c in Sources */,
 				BB28C7B826896CE600BDC834 /* ArrowBarButton.m in Sources */,
+				68D1339FECDB43A092693D26 /* GhosttyTerminalHost.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2537,6 +2557,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BBEF192C26806546001225BD /* AppLib.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 5.0;
 			};
 			name = DebugLinux;
 		};
@@ -2733,6 +2754,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BBEF192C26806546001225BD /* AppLib.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 5.0;
 			};
 			name = "Debug-ApplePleaseFixFB19282108";
 		};
@@ -2740,6 +2762,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BBEF192C26806546001225BD /* AppLib.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -2783,6 +2806,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BBEF192C26806546001225BD /* AppLib.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 5.0;
 			};
 			name = ReleaseLinux;
 		};
@@ -3067,6 +3091,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5C5F371F3BE6A5394679844E /* XCRemoteSwiftPackageReference "libghostty-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Lakr233/libghostty-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.2.2026102101;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4C4EA1CB76DD117111BB8079 /* GhosttyTerminal */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5C5F371F3BE6A5394679844E /* XCRemoteSwiftPackageReference "libghostty-spm" */;
+			productName = GhosttyTerminal;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BB792B461F96D8E000FFB7A4 /* Project object */;
 }

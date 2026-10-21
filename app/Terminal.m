@@ -11,6 +11,7 @@
 #include "LinuxInterop.h"
 #include "fs/devices.h"
 #include "fs/tty.h"
+#import "libiSHApp-Swift.h"
 
 extern struct tty_driver ios_pty_driver;
 
@@ -41,6 +42,7 @@ typedef struct linux_tty *tty_t;
 
 @property NSNumber *terminalsKey;
 @property NSUUID *uuid;
+@property GhosttyTerminalHost *ghostty;
 
 @end
 
@@ -89,9 +91,46 @@ static NSMapTable<NSUUID *, Terminal *> *terminalsByUUID;
             [terminals setObject:self forKey:self.terminalsKey];
             self.uuid = [NSUUID UUID];
             [terminalsByUUID setObject:self forKey:self.uuid];
+
+            if (Terminal.usesGhostty) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self setUpGhostty];
+                });
+            }
         }
         return self;
     }
+}
+
++ (BOOL)usesGhostty {
+    return ![NSUserDefaults.standardUserDefaults boolForKey:@"UseHterm"];
+}
+
+- (void)setUpGhostty {
+    GhosttyTerminalHost *ghostty = [GhosttyTerminalHost new];
+    __weak typeof(self) weakSelf = self;
+    ghostty.onInput = ^(NSData *data) {
+        [weakSelf sendInput:data];
+    };
+    ghostty.onResize = ^(NSInteger cols, NSInteger rows) {
+        [weakSelf syncWindowSize];
+    };
+    // Swap under the output lock, so nothing lands in pendingData after it's flushed.
+#if !ISH_LINUX
+    lock(&_dataLock);
+#endif
+    @synchronized (self) {
+        self.ghostty = ghostty;
+        if (_pendingData.length > 0) {
+            [ghostty receive:[_pendingData copy]];
+            _pendingData.length = 0;
+        }
+    }
+#if !ISH_LINUX
+    notify(&_dataConsumed);
+    unlock(&_dataLock);
+#endif
+    self.loaded = YES;
 }
 
 - (WKWebView *)webView {
@@ -151,25 +190,34 @@ static NSMapTable<NSUUID *, Terminal *> *terminalsByUUID;
 }
 
 - (void)syncWindowSize {
+    if (self.ghostty) {
+        if (self.ghostty.columns > 0)
+            [self setWindowSizeColumns:(int) self.ghostty.columns rows:(int) self.ghostty.rows];
+        return;
+    }
     [self.webView evaluateJavaScript:@"exports.getSize()" completionHandler:^(NSArray<NSNumber *> *dimensions, NSError *error) {
-        int cols = dimensions[0].intValue;
-        int rows = dimensions[1].intValue;
-        if (self.tty == NULL)
-            return;
-#if !ISH_LINUX
-        lock(&self.tty->lock);
-        tty_set_winsize(self.tty, (struct winsize_) {.col = cols, .row = rows});
-        unlock(&self.tty->lock);
-#else
-        async_do_in_workqueue(^{
-            self->_tty->ops->resize(self->_tty, cols, rows);
-        });
-#endif
+        [self setWindowSizeColumns:dimensions[0].intValue rows:dimensions[1].intValue];
     }];
+}
+
+- (void)setWindowSizeColumns:(int)cols rows:(int)rows {
+    if (self.tty == NULL)
+        return;
+#if !ISH_LINUX
+    lock(&self.tty->lock);
+    tty_set_winsize(self.tty, (struct winsize_) {.col = cols, .row = rows});
+    unlock(&self.tty->lock);
+#else
+    async_do_in_workqueue(^{
+        self->_tty->ops->resize(self->_tty, cols, rows);
+    });
+#endif
 }
 
 - (void)setEnableVoiceOverAnnounce:(BOOL)enableVoiceOverAnnounce {
     _enableVoiceOverAnnounce = enableVoiceOverAnnounce;
+    if (self.ghostty)
+        return;
     [self.webView evaluateJavaScript:[NSString stringWithFormat:@"term.setAccessibilityEnabled(%@)",
                                       enableVoiceOverAnnounce ? @"true" : @"false"]
                    completionHandler:nil];
@@ -178,6 +226,11 @@ static NSMapTable<NSUUID *, Terminal *> *terminalsByUUID;
 - (int)sendOutput:(const void *)buf length:(int)len {
 #if !ISH_LINUX
     lock(&_dataLock);
+    if (self.ghostty) {
+        [self.ghostty receive:[NSData dataWithBytes:buf length:len]];
+        unlock(&_dataLock);
+        return len;
+    }
     if (!NSThread.isMainThread) {
         // The main thread is the only one that can unblock this, so sleeping here would be a deadlock.
         // The only reason for this to be called on the main thread is if input is echoed.
@@ -189,6 +242,10 @@ static NSMapTable<NSUUID *, Terminal *> *terminalsByUUID;
     unlock(&_dataLock);
 #else
     @synchronized (self) {
+        if (self.ghostty) {
+            [self.ghostty receive:[NSData dataWithBytes:buf length:len]];
+            return len;
+        }
         int room = [self roomForOutput];
         if (len > room)
             len = room;
@@ -222,11 +279,15 @@ static NSMapTable<NSUUID *, Terminal *> *terminalsByUUID;
         self.tty->ops->send_input(self.tty, inputRef.bytes, inputRef.length);
     });
 #endif
+    if (self.ghostty)
+        return;
     [self.webView evaluateJavaScript:@"exports.setUserGesture()" completionHandler:nil];
     [self.scrollToBottomTask schedule];
 }
 
 - (void)scrollToBottom {
+    if (self.ghostty)
+        return;
     [self.webView evaluateJavaScript:@"exports.scrollToBottom()" completionHandler:nil];
 }
 
