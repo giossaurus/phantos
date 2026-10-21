@@ -32,7 +32,7 @@
 	<string>Programs running in iSH will be allowed to see your location.</string>
 	<key>NSUserActivityTypes</key>
 	<array>
-		<string>app.ish.scene</string>
+		<string>com.giossaurus.phantos.scene</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

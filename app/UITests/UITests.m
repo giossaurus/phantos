@@ -22,4 +22,13 @@
     XCTAssertEqualObjects(app.label, @"PhantOS");
 }
 
+- (void)testAppLaunchesUnderThePhantOSBundleIdentifier {
+    XCUIApplication *app = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.giossaurus.phantos"];
+    [app launch];
+    // Without the app group the app dies at launch, so staying up means the group resolved too.
+    XCTAssertTrue([app waitForState:XCUIApplicationStateRunningForeground timeout:10]);
+    [NSThread sleepForTimeInterval:3];
+    XCTAssertEqual(app.state, XCUIApplicationStateRunningForeground);
+}
+
 @end

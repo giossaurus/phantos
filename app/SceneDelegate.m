@@ -41,7 +41,7 @@ static NSString *const TerminalUUID = @"TerminalUUID";
 }
 
 - (NSUserActivity *)stateRestorationActivityForScene:(UIScene *)scene {
-    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:@"app.ish.scene"];
+    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:@"com.giossaurus.phantos.scene"];
     TerminalViewController *vc = (TerminalViewController *) self.window.rootViewController;
     if ([vc isKindOfClass:TerminalViewController.class]) {
         self.terminalUUID = vc.sessionTerminalUUID.UUIDString;

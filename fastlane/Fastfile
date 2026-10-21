@@ -13,13 +13,13 @@ lane :build do |options|
         path: "iSH.xcodeproj",
         targets: "iSH",
         use_automatic_signing: false,
-        profile_uuid: ENV["sigh_app.ish.iSH_development"],
+        profile_uuid: ENV["sigh_com.giossaurus.phantos_development"],
       )
       update_code_signing_settings(
         path: "iSH.xcodeproj",
         targets: "iSHFileProvider",
         use_automatic_signing: false,
-        profile_uuid: ENV["sigh_app.ish.iSH.FileProvider_development"],
+        profile_uuid: ENV["sigh_com.giossaurus.phantos.FileProvider_development"],
       )
     end
 
