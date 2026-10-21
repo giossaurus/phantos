@@ -121,6 +121,67 @@
     [self attachScreenshotOf:app named:@"phantos-theme"];
 }
 
+- (XCUIElement *)viewportIn:(XCUIApplication *)app {
+    XCUIElement *viewport = [[app descendantsMatchingType:XCUIElementTypeAny] matchingIdentifier:@"terminal.viewport"].firstMatch;
+    XCTAssertTrue([viewport waitForExistenceWithTimeout:20], @"no Ghostty viewport");
+    return viewport;
+}
+
+- (XCUIElementQuery *)tabsIn:(XCUIApplication *)app {
+    return [app.buttons matchingIdentifier:@"tab"];
+}
+
+- (void)testTabsRunSeparateSessions {
+    XCUIApplication *app = [XCUIApplication new];
+    app.launchArguments = @[@"--ui-testing", @"--ui-testing-fresh-preferences"];
+    [app launch];
+    XCUIElement *viewport = [self viewportIn:app];
+    XCTAssertTrue([self waitForElement:viewport valueContaining:@"PhantOS" timeout:30]);
+    XCTAssertEqual([self tabsIn:app].count, 1);
+    // A tab is named after where its shell is, not powerlevel10k's whole "user@host:~".
+    NSPredicate *home = [NSPredicate predicateWithFormat:@"label == 'Tab 1, ~'"];
+    XCTNSPredicateExpectation *named = [[XCTNSPredicateExpectation alloc] initWithPredicate:home object:[[self tabsIn:app] elementBoundByIndex:0]];
+    XCTAssertEqual([XCTWaiter waitForExpectations:@[named] timeout:10], XCTWaiterResultCompleted, @"%@", [[self tabsIn:app] elementBoundByIndex:0].label);
+
+    [app.buttons[@"New Tab"] tap];
+    XCTAssertEqual([self tabsIn:app].count, 2);
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"PhantOS" timeout:30], @"the new tab has no fresh session");
+    [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)] tap];
+    [app typeText:@"echo tab-$((1+1))\n"];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"tab-2" timeout:30]);
+
+    // The first tab's session never saw that command.
+    [[self tabsIn:app] elementBoundByIndex:0].tap;
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"PhantOS" timeout:10]);
+    XCTAssertFalse([[self viewportIn:app].value containsString:@"tab-2"], @"%@", [self viewportIn:app].value);
+    [self attachScreenshotOf:app named:@"tabs"];
+}
+
+- (void)testExitingAShellClosesItsTab {
+    XCUIApplication *app = [XCUIApplication new];
+    app.launchArguments = @[@"--ui-testing", @"--ui-testing-fresh-preferences"];
+    [app launch];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"PhantOS" timeout:30]);
+    [app.buttons[@"New Tab"] tap];
+    XCTAssertEqual([self tabsIn:app].count, 2);
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"PhantOS" timeout:30]);
+    [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)] tap];
+    [app typeText:@"exit\n"];
+    NSPredicate *one = [NSPredicate predicateWithFormat:@"count == 1"];
+    XCTNSPredicateExpectation *expectation = [[XCTNSPredicateExpectation alloc] initWithPredicate:one object:[self tabsIn:app]];
+    XCTAssertEqual([XCTWaiter waitForExpectations:@[expectation] timeout:15], XCTWaiterResultCompleted);
+}
+
+- (void)testTabsAndExtraKeysAreLiquidGlass {
+    XCUIApplication *app = [XCUIApplication new];
+    app.launchArguments = @[@"--ui-testing"];
+    [app launch];
+    XCTAssertTrue([[app.otherElements matchingIdentifier:@"tabs.glass"].firstMatch waitForExistenceWithTimeout:20]);
+    [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)] tap];
+    XCTAssertTrue([[app.otherElements matchingIdentifier:@"keys.glass"].firstMatch waitForExistenceWithTimeout:10]);
+    [self attachScreenshotOf:app named:@"glass"];
+}
+
 - (void)testSettingsHaveNoAlternateIcons {
     // The alternate icons were iSH's community art; PhantOS has the one icon.
     XCUIApplication *app = [self launchIntoSettings];

@@ -18,6 +18,8 @@ public final class GhosttyTerminalHost: NSObject {
     @objc public var onInput: ((Data) -> Void)?
     /// The grid size, in columns and rows, whenever it changes. Called on the main thread.
     @objc public var onResize: ((Int, Int) -> Void)?
+    /// The title the program set (OSC 0/2), e.g. powerlevel10k's "user@host: ~". Called on the main thread.
+    @objc public var onTitle: ((String) -> Void)?
     @objc public private(set) var columns = 0
     @objc public private(set) var rows = 0
 
@@ -67,6 +69,7 @@ public final class GhosttyTerminalHost: NSObject {
         view.isOpaque = false
         view.configuration = TerminalSurfaceOptions(backend: .inMemory(session))
         view.controller = controller
+        view.delegate = self
         return view
     }()
 
@@ -193,5 +196,11 @@ private final class StyleAccessibilityView: UIView {
     override var accessibilityValue: String? {
         get { style() }
         set {}
+    }
+}
+
+extension GhosttyTerminalHost: TerminalSurfaceTitleDelegate {
+    public func terminalDidChangeTitle(_ title: String) {
+        onTitle?(title)
     }
 }

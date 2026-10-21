@@ -103,6 +103,7 @@
 		497F6D5C254E609700C82F46 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = BB7D93822087C2890008DA78 /* main.c */; };
 		497F6D87254E62E100C82F46 /* libish.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB13F7DC200AD81D003D1C4D /* libish.a */; };
 		49FF844B2A06249F00850B7A /* ExceptionExfiltrator.m in Sources */ = {isa = PBXBuildFile; fileRef = 49FF844A2A06249F00850B7A /* ExceptionExfiltrator.m */; };
+		552DB3D856E8D7F7DA91A44E /* SessionTabsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 515CED7B89BDED7E6CC3778A /* SessionTabsView.m */; };
 		68D1339FECDB43A092693D26 /* GhosttyTerminalHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A2A9288ECAFF4C59045679 /* GhosttyTerminalHost.swift */; };
 		6DB107322003EAE3C34277F4 /* GhosttyTerminal in Frameworks */ = {isa = PBXBuildFile; productRef = 4C4EA1CB76DD117111BB8079 /* GhosttyTerminal */; };
 		A9CE84EFEC5904903A9EDECA /* LicensesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 893FE97652E669ED3124CD4D /* LicensesViewController.m */; };
@@ -386,6 +387,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		07A2713A2E22C610B07AED06 /* SessionTabsView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = SessionTabsView.h; sourceTree = "<group>"; };
 		0B8204C5E5B37DE3FE638E9E /* SwiftLinkage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwiftLinkage.swift; sourceTree = "<group>"; };
 		0FC2383B2991FB82004C09EC /* mmx.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mmx.c; sourceTree = "<group>"; };
 		32A2A9288ECAFF4C59045679 /* GhosttyTerminalHost.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GhosttyTerminalHost.swift; sourceTree = "<group>"; };
@@ -550,6 +552,7 @@
 		497F6D47254E605F00C82F46 /* ish */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ish; sourceTree = BUILT_PRODUCTS_DIR; };
 		49FF844A2A06249F00850B7A /* ExceptionExfiltrator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExceptionExfiltrator.m; sourceTree = "<group>"; };
 		49FF844C2A0624AF00850B7A /* ExceptionExfiltrator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExceptionExfiltrator.h; sourceTree = "<group>"; };
+		515CED7B89BDED7E6CC3778A /* SessionTabsView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = SessionTabsView.m; sourceTree = "<group>"; };
 		54EC29949AFE15125200486B /* LicensesViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = LicensesViewController.h; sourceTree = "<group>"; };
 		650B337222EA235C00B4C03E /* PasteboardDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PasteboardDevice.h; sourceTree = "<group>"; };
 		650B337322EA235C00B4C03E /* PasteboardDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PasteboardDevice.m; sourceTree = "<group>"; };
@@ -1002,6 +1005,8 @@
 				781CE387E3D0F7E0597C1CB9 /* PhantOS.icon */,
 				32A2A9288ECAFF4C59045679 /* GhosttyTerminalHost.swift */,
 				0B8204C5E5B37DE3FE638E9E /* SwiftLinkage.swift */,
+				07A2713A2E22C610B07AED06 /* SessionTabsView.h */,
+				515CED7B89BDED7E6CC3778A /* SessionTabsView.m */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -2090,6 +2095,7 @@
 				BB28C7B826896CE600BDC834 /* ArrowBarButton.m in Sources */,
 				A9CE84EFEC5904903A9EDECA /* LicensesViewController.m in Sources */,
 				68D1339FECDB43A092693D26 /* GhosttyTerminalHost.swift in Sources */,
+				552DB3D856E8D7F7DA91A44E /* SessionTabsView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

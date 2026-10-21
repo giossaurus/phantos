@@ -43,8 +43,11 @@ typedef struct linux_tty *tty_t;
 @property NSNumber *terminalsKey;
 @property NSUUID *uuid;
 @property GhosttyTerminalHost *ghostty;
+@property (nullable) NSString *title;
 
 @end
+
+NSString *const TerminalTitleDidChangeNotification = @"TerminalTitleDidChangeNotification";
 
 @interface CustomWebView : WKWebView
 @end
@@ -114,6 +117,10 @@ static NSMapTable<NSUUID *, Terminal *> *terminalsByUUID;
     };
     ghostty.onResize = ^(NSInteger cols, NSInteger rows) {
         [weakSelf syncWindowSize];
+    };
+    ghostty.onTitle = ^(NSString *title) {
+        weakSelf.title = title;
+        [NSNotificationCenter.defaultCenter postNotificationName:TerminalTitleDidChangeNotification object:weakSelf];
     };
     // Swap under the output lock, so nothing lands in pendingData after it's flushed.
 #if !ISH_LINUX

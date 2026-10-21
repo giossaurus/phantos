@@ -16,6 +16,8 @@ struct tty;
 // Ghostty draws the terminal unless the UseHterm default is set.
 @property (class, readonly) BOOL usesGhostty;
 @property (readonly) GhosttyTerminalHost *ghostty;
+// What the program running in it calls itself (OSC 0/2). TerminalTitleDidChangeNotification follows changes.
+@property (readonly, nullable) NSString *title;
 
 + (Terminal *)terminalWithType:(int)type number:(int)number;
 #if !ISH_LINUX
@@ -44,3 +46,4 @@ struct tty;
 @end
 
 extern struct tty_driver ios_console_driver;
+extern NSString *const TerminalTitleDidChangeNotification;

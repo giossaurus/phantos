@@ -15,6 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property IBInspectable BOOL secondary;
 @property IBInspectable BOOL toggleable;
 
+// Draws the key as a Liquid Glass capsule instead of a keyboard key. A toggled key is tinted.
+- (void)useGlass;
+
 @end
 
 NS_ASSUME_NONNULL_END
