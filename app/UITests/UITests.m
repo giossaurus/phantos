@@ -248,6 +248,10 @@
     XCTAssertTrue([app.navigationBars[@"Licenses & Credits"] waitForExistenceWithTimeout:5]);
     [self attachScreenshotOf:app named:@"licenses"];
 
+    // Everything PhantOS ships whose license asks for its notice.
+    for (NSString *name in @[@"Ghostty", @"GhosttyKit", @"zsh", @"Oh My Zsh", @"Powerlevel10k", @"Neovim"])
+        XCTAssertTrue(app.tables.firstMatch.staticTexts[name].exists, @"no credit for %@", name);
+
     [app.tables.firstMatch.staticTexts[@"iSH"] tap];
     // The terminal underneath is a text input too, so find the license by its identifier.
     XCUIElement *text = app.textViews[@"license.text"];
