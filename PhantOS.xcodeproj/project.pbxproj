@@ -182,7 +182,7 @@
 		BB88F4942154760800A341FD /* FileProviderExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = BB88F4932154760800A341FD /* FileProviderExtension.m */; };
 		BB88F4972154760800A341FD /* FileProviderItem.m in Sources */ = {isa = PBXBuildFile; fileRef = BB88F4962154760800A341FD /* FileProviderItem.m */; };
 		BB88F49A2154760800A341FD /* FileProviderEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = BB88F4992154760800A341FD /* FileProviderEnumerator.m */; };
-		BB88F49F2154760800A341FD /* iSHFileProvider.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BB88F4902154760800A341FD /* iSHFileProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		BB88F49F2154760800A341FD /* PhantOSFileProvider.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BB88F4902154760800A341FD /* PhantOSFileProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		BB8C3AFF26B7B8CF00E38DDC /* fakefs.c in Sources */ = {isa = PBXBuildFile; fileRef = BB8C3AFD26B7B8AF00E38DDC /* fakefs.c */; };
 		BB9C7B87240A2B1E00F5D4F0 /* AppGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = BB9C7B84240A240E00F5D4F0 /* AppGroup.m */; };
 		BBA8E2C1236FF5EA00515F76 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBA8E2C0236FF5EA00515F76 /* SystemConfiguration.framework */; };
@@ -193,7 +193,7 @@
 		BBBDDF932CE0132F0071F1F3 /* libiSHLinuxUser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BBBDDF8F2CE00F6B0071F1F3 /* libiSHLinuxUser.a */; };
 		BBBF7B5C2415CDBB00EC4C14 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = BBBF7B5B2415CDBB00EC4C14 /* Settings.bundle */; };
 		BBBF9CBD27C217B6002A30F7 /* PasteboardDeviceLinux.c in Sources */ = {isa = PBXBuildFile; fileRef = BBBF9CBB27C217A6002A30F7 /* PasteboardDeviceLinux.c */; };
-		BBBF9CBF27C44114002A30F7 /* iSHFileProvider.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BB88F4902154760800A341FD /* iSHFileProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		BBBF9CBF27C44114002A30F7 /* PhantOSFileProvider.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BB88F4902154760800A341FD /* PhantOSFileProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		BBBFE94921C5CFF100509DD5 /* NSError+ISHErrno.m in Sources */ = {isa = PBXBuildFile; fileRef = BB13F4DD21C5770000343E17 /* NSError+ISHErrno.m */; };
 		BBC3863E276817A900CC8C2E /* UpgradeRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BBA5D87D27536E7600B39D77 /* UpgradeRootViewController.m */; };
 		BBC3863F276817AD00CC8C2E /* CurrentRoot.m in Sources */ = {isa = PBXBuildFile; fileRef = BB565EA32734F1FB00C93EAE /* CurrentRoot.m */; };
@@ -408,7 +408,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				BB88F49F2154760800A341FD /* iSHFileProvider.appex in Embed Foundation Extensions */,
+				BB88F49F2154760800A341FD /* PhantOSFileProvider.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -419,7 +419,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				BBBF9CBF27C44114002A30F7 /* iSHFileProvider.appex in Embed Foundation Extensions */,
+				BBBF9CBF27C44114002A30F7 /* PhantOSFileProvider.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -657,7 +657,7 @@
 		BB38597B27BCEC78000A1082 /* freeiosterminal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = freeiosterminal.png; sourceTree = "<group>"; };
 		BB38598227BCEC83000A1082 /* ishcolontildehash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ishcolontildehash.png; sourceTree = "<group>"; };
 		BB38598327BCEC83000A1082 /* is.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = is.png; sourceTree = "<group>"; };
-		BB41591C255EF9E300E0950C /* iSHUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iSHUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB41591C255EF9E300E0950C /* PhantOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhantOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB41591E255EF9E300E0950C /* UITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UITests.m; sourceTree = "<group>"; };
 		BB415920255EF9E300E0950C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BB455E0F1FB37F6600AFB48B /* DelayedUITask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DelayedUITask.h; sourceTree = "<group>"; };
@@ -675,7 +675,7 @@
 		BB6DB260216435330047A611 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		BB78AB291FAD22440013E782 /* TerminalView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TerminalView.h; sourceTree = "<group>"; };
 		BB78AB2A1FAD22440013E782 /* TerminalView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TerminalView.m; sourceTree = "<group>"; };
-		BB792B501F96D90D00FFB7A4 /* iSH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iSH.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB792B501F96D90D00FFB7A4 /* PhantOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhantOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB792B531F96D90D00FFB7A4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		BB792B541F96D90D00FFB7A4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		BB792B561F96D90D00FFB7A4 /* TerminalViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TerminalViewController.h; sourceTree = "<group>"; };
@@ -691,7 +691,7 @@
 		BB7D93822087C2890008DA78 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		BB82A7FB21B4C2E8006AA5FD /* AboutExternalKeyboardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AboutExternalKeyboardViewController.h; sourceTree = "<group>"; };
 		BB82A7FC21B4C2E8006AA5FD /* AboutExternalKeyboardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AboutExternalKeyboardViewController.m; sourceTree = "<group>"; };
-		BB88F4902154760800A341FD /* iSHFileProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = iSHFileProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB88F4902154760800A341FD /* PhantOSFileProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PhantOSFileProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB88F4922154760800A341FD /* FileProviderExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileProviderExtension.h; sourceTree = "<group>"; };
 		BB88F4932154760800A341FD /* FileProviderExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileProviderExtension.m; sourceTree = "<group>"; };
 		BB88F4952154760800A341FD /* FileProviderItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileProviderItem.h; sourceTree = "<group>"; };
@@ -739,7 +739,7 @@
 		BBEEA9E9277DAB400069495B /* LinuxPTY.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = LinuxPTY.c; sourceTree = "<group>"; };
 		BBEF191E26806364001225BD /* libiSHApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libiSHApp.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBEF192C26806546001225BD /* AppLib.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppLib.xcconfig; sourceTree = "<group>"; };
-		BBEF199C268066D1001225BD /* iSH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iSH.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBEF199C268066D1001225BD /* PhantOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhantOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBEF19BA26806D7E001225BD /* Linux.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Linux.xcconfig; sourceTree = "<group>"; };
 		BBFB2C5B2590257E00545EAB /* libish_emu.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libish_emu.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBFB2CDA259028DC00545EAB /* StaticLib.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = StaticLib.xcconfig; sourceTree = "<group>"; };
@@ -1029,15 +1029,15 @@
 		BB792B511F96D90D00FFB7A4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BB792B501F96D90D00FFB7A4 /* iSH.app */,
-				BB88F4902154760800A341FD /* iSHFileProvider.appex */,
+				BB792B501F96D90D00FFB7A4 /* PhantOS.app */,
+				BB88F4902154760800A341FD /* PhantOSFileProvider.appex */,
 				BB13F7DC200AD81D003D1C4D /* libish.a */,
 				BBFB2C5B2590257E00545EAB /* libish_emu.a */,
-				BB41591C255EF9E300E0950C /* iSHUITests.xctest */,
+				BB41591C255EF9E300E0950C /* PhantOSUITests.xctest */,
 				497F6D47254E605F00C82F46 /* ish */,
 				497F6CE4254E5E4C00C82F46 /* MakeXcodeAutoCompleteWork */,
 				BBEF191E26806364001225BD /* libiSHApp.a */,
-				BBEF199C268066D1001225BD /* iSH.app */,
+				BBEF199C268066D1001225BD /* PhantOS.app */,
 				BB21A16F2689041500BD19B4 /* libfakefs.a */,
 				BBECF3A22691314C00DEC937 /* libiSHLinux.a */,
 				BBECF3B8269136E100DEC937 /* liblinux.a */,
@@ -1459,9 +1459,9 @@
 			productReference = BB21A16F2689041500BD19B4 /* libfakefs.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		BB41591B255EF9E300E0950C /* iSHUITests */ = {
+		BB41591B255EF9E300E0950C /* PhantOSUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BB415925255EF9E300E0950C /* Build configuration list for PBXNativeTarget "iSHUITests" */;
+			buildConfigurationList = BB415925255EF9E300E0950C /* Build configuration list for PBXNativeTarget "PhantOSUITests" */;
 			buildPhases = (
 				BB415918255EF9E300E0950C /* Sources */,
 				BB415919255EF9E300E0950C /* Frameworks */,
@@ -1472,14 +1472,14 @@
 			dependencies = (
 				BB415922255EF9E300E0950C /* PBXTargetDependency */,
 			);
-			name = iSHUITests;
-			productName = iSHUITests;
-			productReference = BB41591C255EF9E300E0950C /* iSHUITests.xctest */;
+			name = PhantOSUITests;
+			productName = PhantOSUITests;
+			productReference = BB41591C255EF9E300E0950C /* PhantOSUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		BB792B4F1F96D90D00FFB7A4 /* iSH */ = {
+		BB792B4F1F96D90D00FFB7A4 /* PhantOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BB792B661F96D90D00FFB7A4 /* Build configuration list for PBXNativeTarget "iSH" */;
+			buildConfigurationList = BB792B661F96D90D00FFB7A4 /* Build configuration list for PBXNativeTarget "PhantOS" */;
 			buildPhases = (
 				BB21A17826890A5B00BD19B4 /* Sources */,
 				BB792B4D1F96D90D00FFB7A4 /* Frameworks */,
@@ -1498,14 +1498,14 @@
 				BB13F7E7200AD874003D1C4D /* PBXTargetDependency */,
 				BB88F49E2154760800A341FD /* PBXTargetDependency */,
 			);
-			name = iSH;
-			productName = iSH;
-			productReference = BB792B501F96D90D00FFB7A4 /* iSH.app */;
+			name = PhantOS;
+			productName = PhantOS;
+			productReference = BB792B501F96D90D00FFB7A4 /* PhantOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		BB88F48F2154760800A341FD /* iSHFileProvider */ = {
+		BB88F48F2154760800A341FD /* PhantOSFileProvider */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BB88F4A22154760800A341FD /* Build configuration list for PBXNativeTarget "iSHFileProvider" */;
+			buildConfigurationList = BB88F4A22154760800A341FD /* Build configuration list for PBXNativeTarget "PhantOSFileProvider" */;
 			buildPhases = (
 				BB88F48C2154760800A341FD /* Sources */,
 				BB88F48D2154760800A341FD /* Frameworks */,
@@ -1515,9 +1515,9 @@
 			);
 			dependencies = (
 			);
-			name = iSHFileProvider;
-			productName = iSHFiles;
-			productReference = BB88F4902154760800A341FD /* iSHFileProvider.appex */;
+			name = PhantOSFileProvider;
+			productName = PhantOSFileProvider;
+			productReference = BB88F4902154760800A341FD /* PhantOSFileProvider.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		BBBDDF802CE00F6A0071F1F3 /* libiSHLinuxUser */ = {
@@ -1584,9 +1584,9 @@
 			productReference = BBEF191E26806364001225BD /* libiSHApp.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		BBEF1964268066D1001225BD /* iSH+Linux */ = {
+		BBEF1964268066D1001225BD /* PhantOS+Linux */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BBEF1999268066D1001225BD /* Build configuration list for PBXNativeTarget "iSH+Linux" */;
+			buildConfigurationList = BBEF1999268066D1001225BD /* Build configuration list for PBXNativeTarget "PhantOS+Linux" */;
 			buildPhases = (
 				BB21A1722689084800BD19B4 /* Sources */,
 				BBEF196F268066D1001225BD /* Frameworks */,
@@ -1603,9 +1603,9 @@
 				BBEF1967268066D1001225BD /* PBXTargetDependency */,
 				BBEF1969268066D1001225BD /* PBXTargetDependency */,
 			);
-			name = "iSH+Linux";
-			productName = iSH;
-			productReference = BBEF199C268066D1001225BD /* iSH.app */;
+			name = "PhantOS+Linux";
+			productName = "PhantOS+Linux";
+			productReference = BBEF199C268066D1001225BD /* PhantOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 		BBFB2C542590257E00545EAB /* libish_emu */ = {
@@ -1707,13 +1707,13 @@
 			);
 			projectRoot = "";
 			targets = (
-				BB792B4F1F96D90D00FFB7A4 /* iSH */,
+				BB792B4F1F96D90D00FFB7A4 /* PhantOS */,
 				BBEF191D26806364001225BD /* libiSHApp */,
-				BBEF1964268066D1001225BD /* iSH+Linux */,
+				BBEF1964268066D1001225BD /* PhantOS+Linux */,
 				BBECF3A12691314C00DEC937 /* libiSHLinux */,
 				BBBDDF802CE00F6A0071F1F3 /* libiSHLinuxUser */,
-				BB88F48F2154760800A341FD /* iSHFileProvider */,
-				BB41591B255EF9E300E0950C /* iSHUITests */,
+				BB88F48F2154760800A341FD /* PhantOSFileProvider */,
+				BB41591B255EF9E300E0950C /* PhantOSUITests */,
 				BB13F7CA200ACC31003D1C4D /* Meson */,
 				BB13F7D0200ACCA2003D1C4D /* Ninja */,
 				BB13F7DB200AD81D003D1C4D /* libish */,
@@ -2259,7 +2259,7 @@
 		};
 		BB415922255EF9E300E0950C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = BB792B4F1F96D90D00FFB7A4 /* iSH */;
+			target = BB792B4F1F96D90D00FFB7A4 /* PhantOS */;
 			targetProxy = BB415921255EF9E300E0950C /* PBXContainerItemProxy */;
 		};
 		BB4A922824ED940C002F5A96 /* PBXTargetDependency */ = {
@@ -2269,7 +2269,7 @@
 		};
 		BB88F49E2154760800A341FD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = BB88F48F2154760800A341FD /* iSHFileProvider */;
+			target = BB88F48F2154760800A341FD /* PhantOSFileProvider */;
 			targetProxy = BB88F49D2154760800A341FD /* PBXContainerItemProxy */;
 		};
 		BBBDDF812CE00F6A0071F1F3 /* PBXTargetDependency */ = {
@@ -2451,7 +2451,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = iSH;
+				TEST_TARGET_NAME = PhantOS;
 			};
 			name = "Debug-ApplePleaseFixFB19282108";
 		};
@@ -2469,7 +2469,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_IDENTIFIER).UITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = iSH;
+				TEST_TARGET_NAME = PhantOS;
 			};
 			name = Release;
 		};
@@ -2571,7 +2571,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = iSH;
+				TEST_TARGET_NAME = PhantOS;
 			};
 			name = DebugLinux;
 		};
@@ -2816,7 +2816,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_IDENTIFIER).UITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = iSH;
+				TEST_TARGET_NAME = PhantOS;
 			};
 			name = ReleaseLinux;
 		};
@@ -2949,7 +2949,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BB415925255EF9E300E0950C /* Build configuration list for PBXNativeTarget "iSHUITests" */ = {
+		BB415925255EF9E300E0950C /* Build configuration list for PBXNativeTarget "PhantOSUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB415923255EF9E300E0950C /* Debug-ApplePleaseFixFB19282108 */,
@@ -2982,7 +2982,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BB792B661F96D90D00FFB7A4 /* Build configuration list for PBXNativeTarget "iSH" */ = {
+		BB792B661F96D90D00FFB7A4 /* Build configuration list for PBXNativeTarget "PhantOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB792B641F96D90D00FFB7A4 /* Debug-ApplePleaseFixFB19282108 */,
@@ -2993,7 +2993,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BB88F4A22154760800A341FD /* Build configuration list for PBXNativeTarget "iSHFileProvider" */ = {
+		BB88F4A22154760800A341FD /* Build configuration list for PBXNativeTarget "PhantOSFileProvider" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB88F4A02154760800A341FD /* Debug-ApplePleaseFixFB19282108 */,
@@ -3048,7 +3048,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BBEF1999268066D1001225BD /* Build configuration list for PBXNativeTarget "iSH+Linux" */ = {
+		BBEF1999268066D1001225BD /* Build configuration list for PBXNativeTarget "PhantOS+Linux" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BBEF199A268066D1001225BD /* Debug-ApplePleaseFixFB19282108 */,

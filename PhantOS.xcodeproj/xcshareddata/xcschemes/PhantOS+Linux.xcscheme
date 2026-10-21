@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "BBEF1964268066D1001225BD"
-               BuildableName = "iSH.app"
-               BlueprintName = "iSH+Linux"
-               ReferencedContainer = "container:iSH.xcodeproj">
+               BuildableName = "PhantOS.app"
+               BlueprintName = "PhantOS+Linux"
+               ReferencedContainer = "container:PhantOS.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "BB41591B255EF9E300E0950C"
-               BuildableName = "iSHUITests.xctest"
-               BlueprintName = "iSHUITests"
-               ReferencedContainer = "container:iSH.xcodeproj">
+               BuildableName = "PhantOSUITests.xctest"
+               BlueprintName = "PhantOSUITests"
+               ReferencedContainer = "container:PhantOS.xcodeproj">
             </BuildableReference>
             <SkippedTests>
                <Test
@@ -60,9 +60,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BBEF1964268066D1001225BD"
-            BuildableName = "iSH.app"
-            BlueprintName = "iSH+Linux"
-            ReferencedContainer = "container:iSH.xcodeproj">
+            BuildableName = "PhantOS.app"
+            BlueprintName = "PhantOS+Linux"
+            ReferencedContainer = "container:PhantOS.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -76,9 +76,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BBEF1964268066D1001225BD"
-            BuildableName = "iSH.app"
-            BlueprintName = "iSH+Linux"
-            ReferencedContainer = "container:iSH.xcodeproj">
+            BuildableName = "PhantOS.app"
+            BlueprintName = "PhantOS+Linux"
+            ReferencedContainer = "container:PhantOS.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>
