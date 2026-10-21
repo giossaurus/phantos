@@ -16,4 +16,10 @@
     self.continueAfterFailure = NO;
 }
 
+- (void)testAppIsNamedPhantOS {
+    XCUIApplication *app = [XCUIApplication new];
+    [app launch];
+    XCTAssertEqualObjects(app.label, @"PhantOS");
+}
+
 @end

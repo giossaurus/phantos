@@ -244,6 +244,7 @@
 		BBFB2C7E259026C200545EAB /* libish_emu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB2C5B2590257E00545EAB /* libish_emu.a */; };
 		BBFB2CEC2590296B00545EAB /* libish_emu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB2C5B2590257E00545EAB /* libish_emu.a */; };
 		BBFB55662158644C00DFE6DE /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB55652158644C00DFE6DE /* libresolv.tbd */; };
+		C8B5242B3A04207968B2F8DB /* PhantOS.icon in Resources */ = {isa = PBXBuildFile; fileRef = 781CE387E3D0F7E0597C1CB9 /* PhantOS.icon */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -590,6 +591,7 @@
 		49FF844C2A0624AF00850B7A /* ExceptionExfiltrator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExceptionExfiltrator.h; sourceTree = "<group>"; };
 		650B337222EA235C00B4C03E /* PasteboardDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PasteboardDevice.h; sourceTree = "<group>"; };
 		650B337322EA235C00B4C03E /* PasteboardDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PasteboardDevice.m; sourceTree = "<group>"; };
+		781CE387E3D0F7E0597C1CB9 /* PhantOS.icon */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.icon; path = PhantOS.icon; sourceTree = "<group>"; };
 		8632A7BD219A59FB00F02325 /* UserPreferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserPreferences.h; sourceTree = "<group>"; };
 		8632A7BE219A59FB00F02325 /* UserPreferences.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserPreferences.m; sourceTree = "<group>"; };
 		9A28E4E8219A8B670073D200 /* AboutAppearanceViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AboutAppearanceViewController.h; sourceTree = "<group>"; };
@@ -1079,6 +1081,7 @@
 				BB88F4A4215476BA00A341FD /* iSH.entitlements */,
 				BB88F4912154760800A341FD /* FileProvider */,
 				BB41591D255EF9E300E0950C /* UITests */,
+				781CE387E3D0F7E0597C1CB9 /* PhantOS.icon */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -1778,6 +1781,7 @@
 				BB38599F27BCEE6B000A1082 /* icon1337.png in Resources */,
 				BB3859A127BCEE6B000A1082 /* iinhash.png in Resources */,
 				BB38599727BCEE6B000A1082 /* freeiosterminal.png in Resources */,
+				C8B5242B3A04207968B2F8DB /* PhantOS.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
