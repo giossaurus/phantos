@@ -9,8 +9,13 @@
 #import <WebKit/WebKit.h>
 
 struct tty;
+@class GhosttyTerminalHost;
 
 @interface Terminal : NSObject
+
+// Ghostty draws the terminal unless the UseHterm default is set.
+@property (class, readonly) BOOL usesGhostty;
+@property (readonly) GhosttyTerminalHost *ghostty;
 
 + (Terminal *)terminalWithType:(int)type number:(int)number;
 #if !ISH_LINUX
