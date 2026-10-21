@@ -103,10 +103,10 @@
 		497F6D5C254E609700C82F46 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = BB7D93822087C2890008DA78 /* main.c */; };
 		497F6D87254E62E100C82F46 /* libish.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB13F7DC200AD81D003D1C4D /* libish.a */; };
 		49FF844B2A06249F00850B7A /* ExceptionExfiltrator.m in Sources */ = {isa = PBXBuildFile; fileRef = 49FF844A2A06249F00850B7A /* ExceptionExfiltrator.m */; };
-		A9CE84EFEC5904903A9EDECA /* LicensesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 893FE97652E669ED3124CD4D /* LicensesViewController.m */; };
-		AB48F586011B84810A0885A8 /* Licenses in Resources */ = {isa = PBXBuildFile; fileRef = 9785FA33B01E5D301AF04D67 /* Licenses */; };
 		68D1339FECDB43A092693D26 /* GhosttyTerminalHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A2A9288ECAFF4C59045679 /* GhosttyTerminalHost.swift */; };
 		6DB107322003EAE3C34277F4 /* GhosttyTerminal in Frameworks */ = {isa = PBXBuildFile; productRef = 4C4EA1CB76DD117111BB8079 /* GhosttyTerminal */; };
+		A9CE84EFEC5904903A9EDECA /* LicensesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 893FE97652E669ED3124CD4D /* LicensesViewController.m */; };
+		AB48F586011B84810A0885A8 /* Licenses in Resources */ = {isa = PBXBuildFile; fileRef = 9785FA33B01E5D301AF04D67 /* Licenses */; };
 		BB10E5C9248DBAAC009C7A74 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB10E5C8248DBAA1009C7A74 /* libarchive.a */; };
 		BB10E5D0248DC21D009C7A74 /* Roots.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB10E5CF248DC21D009C7A74 /* Roots.storyboard */; };
 		BB123ACC26C9EFD900419CDA /* LinuxTTY.c in Sources */ = {isa = PBXBuildFile; fileRef = BB123ACB26C9EFD900419CDA /* LinuxTTY.c */; };
@@ -203,6 +203,7 @@
 		BBFB2CEC2590296B00545EAB /* libish_emu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB2C5B2590257E00545EAB /* libish_emu.a */; };
 		BBFB55662158644C00DFE6DE /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB55652158644C00DFE6DE /* libresolv.tbd */; };
 		C8B5242B3A04207968B2F8DB /* PhantOS.icon in Resources */ = {isa = PBXBuildFile; fileRef = 781CE387E3D0F7E0597C1CB9 /* PhantOS.icon */; };
+		DD7BDFF2DED2C399C578A761 /* SwiftLinkage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8204C5E5B37DE3FE638E9E /* SwiftLinkage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -385,6 +386,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0B8204C5E5B37DE3FE638E9E /* SwiftLinkage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwiftLinkage.swift; sourceTree = "<group>"; };
 		0FC2383B2991FB82004C09EC /* mmx.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mmx.c; sourceTree = "<group>"; };
 		32A2A9288ECAFF4C59045679 /* GhosttyTerminalHost.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GhosttyTerminalHost.swift; sourceTree = "<group>"; };
 		408A2639236440F8008A4E81 /* iOSFS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iOSFS.m; sourceTree = "<group>"; };
@@ -999,6 +1001,7 @@
 				BB41591D255EF9E300E0950C /* UITests */,
 				781CE387E3D0F7E0597C1CB9 /* PhantOS.icon */,
 				32A2A9288ECAFF4C59045679 /* GhosttyTerminalHost.swift */,
+				0B8204C5E5B37DE3FE638E9E /* SwiftLinkage.swift */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -1808,6 +1811,7 @@
 			files = (
 			);
 			inputPaths = (
+				"$(ROOTFS_FILE)",
 			);
 			name = "Download Root";
 			outputPaths = (
@@ -1815,7 +1819,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "curl -L \"https://$ROOTFS_URL\" -o \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/root.tar.gz\"\n";
+			shellScript = "# ROOTFS_FILE, set in app/Local.xcconfig, bundles a root built locally instead of the release.\nif [ -n \"$ROOTFS_FILE\" ]; then\n    cp \"$ROOTFS_FILE\" \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/root.tar.gz\"\nelse\n    curl -L \"https://$ROOTFS_URL\" -o \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/root.tar.gz\"\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		BBEF197A268066D1001225BD /* Generate APK Repositories File */ = {
@@ -1863,6 +1867,7 @@
 			files = (
 			);
 			inputPaths = (
+				"$(ROOTFS_FILE)",
 			);
 			name = "Download Root";
 			outputPaths = (
@@ -1870,7 +1875,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "curl -L \"https://$ROOTFS_URL\" -o \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/root.tar.gz\"\n";
+			shellScript = "# ROOTFS_FILE, set in app/Local.xcconfig, bundles a root built locally instead of the release.\nif [ -n \"$ROOTFS_FILE\" ]; then\n    cp \"$ROOTFS_FILE\" \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/root.tar.gz\"\nelse\n    curl -L \"https://$ROOTFS_URL\" -o \"$BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH/root.tar.gz\"\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		BBFB2C572590257E00545EAB /* ShellScript */ = {
@@ -1996,6 +2001,7 @@
 				BB28C7BB268975AE00BDC834 /* LocationDevice.m in Sources */,
 				BB28C7BA268975AA00BDC834 /* iOSFS.m in Sources */,
 				BB28C7BC268975B000BDC834 /* PasteboardDevice.m in Sources */,
+				DD7BDFF2DED2C399C578A761 /* SwiftLinkage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2368,6 +2374,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BB0B86CD2586FD8800208600 /* App.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 5.0;
 			};
 			name = "Debug-ApplePleaseFixFB19282108";
 		};
@@ -2375,6 +2382,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BB0B86CD2586FD8800208600 /* App.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -2390,6 +2398,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BB0B86CD2586FD8800208600 /* App.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 5.0;
 			};
 			name = DebugLinux;
 		};
@@ -2639,6 +2648,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BB0B86CD2586FD8800208600 /* App.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 5.0;
 			};
 			name = ReleaseLinux;
 		};

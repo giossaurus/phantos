@@ -152,6 +152,9 @@ bool (*remove_user_default)(const char *name);
     self->_hostnameIsOverridden = !![NSUserDefaults.standardUserDefaults stringForKey:kHostnameOverrideKey];
     if (self) {
         _defaults = [NSUserDefaults standardUserDefaults];
+        // UI tests of first-launch behaviour start without saved preferences.
+        if ([NSProcessInfo.processInfo.arguments containsObject:@"--ui-testing-fresh-preferences"])
+            [_defaults removePersistentDomainForName:NSBundle.mainBundle.bundleIdentifier];
         [_defaults registerDefaults:@{
             kPreferenceFontSizeKey: @(12),
             kPreferenceCapsLockMappingKey: @(CapsLockMapControl),
@@ -166,7 +169,7 @@ bool (*remove_user_default)(const char *name);
             kPreferenceCursorStyleKey: @(CursorStyleBlock),
             kPreferenceHideStatusBarKey: @(NO),
             kPreferenceColorSchemeKey: @(ColorSchemeMatchSystem),
-            kPreferenceThemeKey: @"Default",
+            kPreferenceThemeKey: @"PhantOS",
             kHostnameOverrideKey: UIDevice.currentDevice.name,
         }];
         // https://webkit.org/blog/10247/new-webkit-features-in-safari-13-1/

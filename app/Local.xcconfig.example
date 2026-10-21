@@ -1,0 +1,4 @@
+// Copy to app/Local.xcconfig for settings that only apply to this machine.
+
+// Bundle a root built with phantos-roots' build.sh instead of downloading the release.
+// ROOTFS_FILE = /path/to/phantos-roots/out/appstore-apk.tar.gz

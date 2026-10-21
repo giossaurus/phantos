@@ -48,6 +48,7 @@ struct rowcol {
 @property CGSize actualFloatingCursorSensitivity;
 
 @property (nullable) UIView *viewportAccessibilityView;
+@property (nullable) UIView *styleAccessibilityView;
 
 @end
 
@@ -127,6 +128,9 @@ static NSString *const HANDLERS[] = {@"syncFocus", @"focus", @"newScrollHeight",
         self.viewportAccessibilityView = [_terminal.ghostty makeViewportAccessibilityView];
         if (self.viewportAccessibilityView)
             [self addSubview:self.viewportAccessibilityView];
+        self.styleAccessibilityView = [_terminal.ghostty makeStyleAccessibilityView];
+        if (self.styleAccessibilityView)
+            [self addSubview:self.styleAccessibilityView];
         return;
     }
     UIView *superview = self.terminal.webView.superview;
@@ -160,6 +164,8 @@ static NSString *const HANDLERS[] = {@"syncFocus", @"focus", @"newScrollHeight",
             [_terminal.ghostty.view removeFromSuperview];
         [self.viewportAccessibilityView removeFromSuperview];
         self.viewportAccessibilityView = nil;
+        [self.styleAccessibilityView removeFromSuperview];
+        self.styleAccessibilityView = nil;
         self.scrollbarView.hidden = NO;
         return;
     }
@@ -206,7 +212,9 @@ static NSString *const HANDLERS[] = {@"syncFocus", @"focus", @"newScrollHeight",
         [self.terminal.ghostty setFontFamily:prefs.fontFamily
                                         size:self.effectiveFontSize
                                   foreground:palette.foregroundColor
-                                  background:palette.backgroundColor];
+                                  background:palette.backgroundColor
+                                      cursor:palette.cursorColor
+                                     palette:palette.colorPaletteOverrides];
         return;
     }
     NSString *json = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:themeInfo options:0 error:nil] encoding:NSUTF8StringEncoding];

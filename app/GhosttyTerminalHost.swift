@@ -77,13 +77,32 @@ public final class GhosttyTerminalHost: NSObject {
         session.receive(data)
     }
 
+    /// What the surface was last styled with, as Ghostty config lines; UI tests read it.
+    @objc public private(set) var styleDescription = ""
+
     /// Updates the one controller in place: a new controller means a new surface, which starts small.
-    @objc public func setFontFamily(_ family: String, size: Double, foreground: String, background: String) {
+    /// `palette` holds a theme's 16 ANSI colours, or is nil to keep Ghostty's.
+    @objc public func setFontFamily(_ family: String, size: Double, foreground: String, background: String,
+                                    cursor: String?, palette: [String]?) {
+        var lines = ["background=\(Self.longHex(background))", "foreground=\(Self.longHex(foreground))"]
+        if let cursor {
+            lines.append("cursor-color=\(Self.longHex(cursor))")
+        }
+        for (index, color) in (palette ?? []).enumerated() {
+            lines.append("palette=\(index)=\(Self.longHex(color))")
+        }
+        styleDescription = lines.joined(separator: "\n")
         controller.setTerminalConfiguration(TerminalConfiguration {
             $0.withFontFamily(family)
             $0.withFontSize(Float(size))
             $0.withCustom("foreground", Self.longHex(foreground))
             $0.withCustom("background", Self.longHex(background))
+            if let cursor {
+                $0.withCursorColor(Self.longHex(cursor))
+            }
+            for (index, color) in (palette ?? []).enumerated() {
+                $0.withPalette(index, color: Self.longHex(color))
+            }
         })
     }
 
@@ -99,6 +118,12 @@ public final class GhosttyTerminalHost: NSObject {
         return ViewportAccessibilityView(session: session) { [weak self] in
             "Terminal \(self?.rows ?? 0) \(self?.columns ?? 0)"
         }
+    }
+
+    /// In UI tests, an element whose value is the colours the surface was given.
+    @objc public func makeStyleAccessibilityView() -> UIView? {
+        guard ProcessInfo.processInfo.arguments.contains("--ui-testing") else { return nil }
+        return StyleAccessibilityView { [weak self] in self?.styleDescription ?? "" }
     }
 }
 
@@ -143,6 +168,30 @@ private final class ViewportAccessibilityView: UIView {
 
     override var accessibilityLabel: String? {
         get { grid() }
+        set {}
+    }
+}
+
+private final class StyleAccessibilityView: UIView {
+    private let style: () -> String
+
+    init(style: @escaping () -> String) {
+        self.style = style
+        super.init(frame: CGRect(x: 0, y: 0, width: 1, height: 1))
+        isAccessibilityElement = true
+        accessibilityIdentifier = "terminal.style"
+        accessibilityLabel = "Terminal Style"
+        isUserInteractionEnabled = false
+        alpha = 0.01
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override var accessibilityValue: String? {
+        get { style() }
         set {}
     }
 }
