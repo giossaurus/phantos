@@ -106,6 +106,7 @@
 		552DB3D856E8D7F7DA91A44E /* SessionTabsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 515CED7B89BDED7E6CC3778A /* SessionTabsView.m */; };
 		68D1339FECDB43A092693D26 /* GhosttyTerminalHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A2A9288ECAFF4C59045679 /* GhosttyTerminalHost.swift */; };
 		6DB107322003EAE3C34277F4 /* GhosttyTerminal in Frameworks */ = {isa = PBXBuildFile; productRef = 4C4EA1CB76DD117111BB8079 /* GhosttyTerminal */; };
+		9BAA3C218E4CC4A514FC95AF /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 81A0A002ADAACA922AD3D457 /* PrivacyInfo.xcprivacy */; };
 		A9CE84EFEC5904903A9EDECA /* LicensesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 893FE97652E669ED3124CD4D /* LicensesViewController.m */; };
 		AB48F586011B84810A0885A8 /* Licenses in Resources */ = {isa = PBXBuildFile; fileRef = 9785FA33B01E5D301AF04D67 /* Licenses */; };
 		BB10E5C9248DBAAC009C7A74 /* libarchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB10E5C8248DBAA1009C7A74 /* libarchive.a */; };
@@ -203,6 +204,7 @@
 		BBFB2C7E259026C200545EAB /* libish_emu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB2C5B2590257E00545EAB /* libish_emu.a */; };
 		BBFB2CEC2590296B00545EAB /* libish_emu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB2C5B2590257E00545EAB /* libish_emu.a */; };
 		BBFB55662158644C00DFE6DE /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BBFB55652158644C00DFE6DE /* libresolv.tbd */; };
+		C29C58A9217BD4BAAD5C34B5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2922908AD5480872C0647789 /* PrivacyInfo.xcprivacy */; };
 		C8B5242B3A04207968B2F8DB /* PhantOS.icon in Resources */ = {isa = PBXBuildFile; fileRef = 781CE387E3D0F7E0597C1CB9 /* PhantOS.icon */; };
 		DD7BDFF2DED2C399C578A761 /* SwiftLinkage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8204C5E5B37DE3FE638E9E /* SwiftLinkage.swift */; };
 /* End PBXBuildFile section */
@@ -390,6 +392,7 @@
 		07A2713A2E22C610B07AED06 /* SessionTabsView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = SessionTabsView.h; sourceTree = "<group>"; };
 		0B8204C5E5B37DE3FE638E9E /* SwiftLinkage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwiftLinkage.swift; sourceTree = "<group>"; };
 		0FC2383B2991FB82004C09EC /* mmx.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mmx.c; sourceTree = "<group>"; };
+		2922908AD5480872C0647789 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		32A2A9288ECAFF4C59045679 /* GhosttyTerminalHost.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GhosttyTerminalHost.swift; sourceTree = "<group>"; };
 		408A2639236440F8008A4E81 /* iOSFS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iOSFS.m; sourceTree = "<group>"; };
 		408A263B23644102008A4E81 /* iOSFS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iOSFS.h; sourceTree = "<group>"; };
@@ -557,6 +560,7 @@
 		650B337222EA235C00B4C03E /* PasteboardDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PasteboardDevice.h; sourceTree = "<group>"; };
 		650B337322EA235C00B4C03E /* PasteboardDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PasteboardDevice.m; sourceTree = "<group>"; };
 		781CE387E3D0F7E0597C1CB9 /* PhantOS.icon */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.icon; path = PhantOS.icon; sourceTree = "<group>"; };
+		81A0A002ADAACA922AD3D457 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		8632A7BD219A59FB00F02325 /* UserPreferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserPreferences.h; sourceTree = "<group>"; };
 		8632A7BE219A59FB00F02325 /* UserPreferences.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserPreferences.m; sourceTree = "<group>"; };
 		893FE97652E669ED3124CD4D /* LicensesViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = LicensesViewController.m; sourceTree = "<group>"; };
@@ -1007,6 +1011,7 @@
 				0B8204C5E5B37DE3FE638E9E /* SwiftLinkage.swift */,
 				07A2713A2E22C610B07AED06 /* SessionTabsView.h */,
 				515CED7B89BDED7E6CC3778A /* SessionTabsView.m */,
+				2922908AD5480872C0647789 /* PrivacyInfo.xcprivacy */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -1199,6 +1204,7 @@
 				BB13F4DD21C5770000343E17 /* NSError+ISHErrno.m */,
 				BB88F49B2154760800A341FD /* Info.plist */,
 				BB88F49C2154760800A341FD /* iSHFileProvider.entitlements */,
+				81A0A002ADAACA922AD3D457 /* PrivacyInfo.xcprivacy */,
 			);
 			path = FileProvider;
 			sourceTree = "<group>";
@@ -1694,6 +1700,7 @@
 				BB2B4DAD231D998300CB578B /* term.js in Resources */,
 				C8B5242B3A04207968B2F8DB /* PhantOS.icon in Resources */,
 				AB48F586011B84810A0885A8 /* Licenses in Resources */,
+				C29C58A9217BD4BAAD5C34B5 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1701,6 +1708,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BAA3C218E4CC4A514FC95AF /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
