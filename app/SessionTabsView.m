@@ -92,50 +92,70 @@
 }
 
 - (void)rebuildTabs {
-    for (UIView *tab in self.tabs.arrangedSubviews) {
-        [self.tabs removeArrangedSubview:tab];
-        [tab removeFromSuperview];
-    }
-    [self.titles enumerateObjectsUsingBlock:^(NSString *title, NSUInteger index, BOOL *stop) {
-        BOOL selected = index == self.selectedIndex;
-        UIButtonConfiguration *configuration = selected ? [UIButtonConfiguration prominentGlassButtonConfiguration]
-                                                        : [UIButtonConfiguration glassButtonConfiguration];
-        configuration.title = title;
-        configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
-        configuration.titleLineBreakMode = NSLineBreakByTruncatingHead;
-        configuration.contentInsets = NSDirectionalEdgeInsetsMake(6, 14, 6, 14);
-        if (selected) {
-            configuration.baseBackgroundColor = self.accentColor;
-            configuration.baseForegroundColor = UIColor.blackColor;
-        } else {
-            configuration.baseForegroundColor = UIColor.secondaryLabelColor;
+    // A title change only restyles the tabs in place: replacing a button under a finger that's
+    // holding it would cancel its menu.
+    if (self.tabs.arrangedSubviews.count != self.titles.count) {
+        for (UIView *tab in self.tabs.arrangedSubviews) {
+            [self.tabs removeArrangedSubview:tab];
+            [tab removeFromSuperview];
         }
-        configuration.titleTextAttributesTransformer = ^NSDictionary *(NSDictionary *attributes) {
-            NSMutableDictionary *result = attributes.mutableCopy;
-            UIFont *font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-            result[NSFontAttributeName] = selected ? [UIFont systemFontOfSize:font.pointSize weight:UIFontWeightSemibold] : font;
-            return result;
-        };
-        UIButton *tab = [UIButton buttonWithConfiguration:configuration primaryAction:[UIAction actionWithHandler:^(UIAction *action) {
-            [self.delegate sessionTabsView:self didSelectTabAtIndex:index];
-        }]];
-        tab.accessibilityIdentifier = @"tab";
-        tab.accessibilityLabel = [NSString stringWithFormat:@"Tab %lu, %@", (unsigned long) index + 1, title];
-        if (selected)
-            tab.accessibilityTraits |= UIAccessibilityTraitSelected;
-        [tab.widthAnchor constraintLessThanOrEqualToConstant:180].active = YES;
-        tab.showsMenuAsPrimaryAction = NO;
-        tab.menu = [UIMenu menuWithChildren:@[
-            [UIAction actionWithTitle:@"Close Tab" image:[UIImage systemImageNamed:@"xmark"] identifier:nil handler:^(UIAction *action) {
-                [self.delegate sessionTabsView:self didCloseTabAtIndex:index];
-            }],
-        ]];
-        [self.tabs addArrangedSubview:tab];
+        for (NSUInteger index = 0; index < self.titles.count; index++)
+            [self.tabs addArrangedSubview:[self makeTabAtIndex:index]];
+    }
+    [self.tabs.arrangedSubviews enumerateObjectsUsingBlock:^(UIView *view, NSUInteger index, BOOL *stop) {
+        [self styleTab:(UIButton *) view atIndex:index];
     }];
     [self layoutIfNeeded];
     UIView *selected = self.selectedIndex < self.tabs.arrangedSubviews.count ? self.tabs.arrangedSubviews[self.selectedIndex] : nil;
     if (selected)
         [self.scrollView scrollRectToVisible:selected.frame animated:YES];
+}
+
+- (UIButton *)makeTabAtIndex:(NSUInteger)index {
+    UIButton *tab = [UIButton buttonWithConfiguration:[UIButtonConfiguration glassButtonConfiguration] primaryAction:[UIAction actionWithHandler:^(UIAction *action) {
+        [self.delegate sessionTabsView:self didSelectTabAtIndex:index];
+    }]];
+    tab.accessibilityIdentifier = @"tab";
+    [tab.widthAnchor constraintLessThanOrEqualToConstant:180].active = YES;
+    // Holding a tab offers to rename it, or to close it in red, as iOS marks destructive actions.
+    UIAction *close = [UIAction actionWithTitle:@"Close Tab" image:[UIImage systemImageNamed:@"xmark"] identifier:nil handler:^(UIAction *action) {
+        [self.delegate sessionTabsView:self didCloseTabAtIndex:index];
+    }];
+    close.attributes = UIMenuElementAttributesDestructive;
+    tab.menu = [UIMenu menuWithChildren:@[
+        [UIAction actionWithTitle:@"Rename Tab" image:[UIImage systemImageNamed:@"pencil"] identifier:nil handler:^(UIAction *action) {
+            [self.delegate sessionTabsView:self didAskToRenameTabAtIndex:index];
+        }],
+        close,
+    ]];
+    return tab;
+}
+
+- (void)styleTab:(UIButton *)tab atIndex:(NSUInteger)index {
+    NSString *title = self.titles[index];
+    BOOL selected = index == self.selectedIndex;
+    UIButtonConfiguration *configuration = selected ? [UIButtonConfiguration prominentGlassButtonConfiguration]
+                                                    : [UIButtonConfiguration glassButtonConfiguration];
+    configuration.title = title;
+    configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+    configuration.titleLineBreakMode = NSLineBreakByTruncatingHead;
+    configuration.contentInsets = NSDirectionalEdgeInsetsMake(6, 14, 6, 14);
+    if (selected) {
+        configuration.baseBackgroundColor = self.accentColor;
+        configuration.baseForegroundColor = UIColor.blackColor;
+    } else {
+        configuration.baseForegroundColor = UIColor.secondaryLabelColor;
+    }
+    configuration.titleTextAttributesTransformer = ^NSDictionary *(NSDictionary *attributes) {
+        NSMutableDictionary *result = attributes.mutableCopy;
+        UIFont *font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+        result[NSFontAttributeName] = selected ? [UIFont systemFontOfSize:font.pointSize weight:UIFontWeightSemibold] : font;
+        return result;
+    };
+    tab.configuration = configuration;
+    tab.accessibilityLabel = [NSString stringWithFormat:@"Tab %lu, %@", (unsigned long) index + 1, title];
+    tab.accessibilityTraits = selected ? tab.accessibilityTraits | UIAccessibilityTraitSelected
+                                       : tab.accessibilityTraits & ~UIAccessibilityTraitSelected;
 }
 
 @end

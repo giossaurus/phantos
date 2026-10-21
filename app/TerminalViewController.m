@@ -27,6 +27,8 @@
 @interface TerminalSession : NSObject
 @property Terminal *terminal;
 @property int pid;
+// A name the user gave the tab; nil follows the shell's title.
+@property (nullable) NSString *name;
 @end
 @implementation TerminalSession
 @end
@@ -653,7 +655,7 @@
     NSMutableArray<NSString *> *titles = [NSMutableArray new];
     NSUInteger selected = 0;
     for (NSUInteger i = 0; i < self.sessions.count; i++) {
-        [titles addObject:[self.class tabTitleForTerminal:self.sessions[i].terminal]];
+        [titles addObject:self.sessions[i].name ?: [self.class tabTitleForTerminal:self.sessions[i].terminal]];
         if (self.sessions[i].terminal == self.sessionTerminal)
             selected = i;
     }
@@ -695,6 +697,31 @@
 
 - (void)sessionTabsView:(SessionTabsView *)view didCloseTabAtIndex:(NSUInteger)index {
     [self closeSessionAtIndex:index];
+}
+
+- (void)sessionTabsView:(SessionTabsView *)view didAskToRenameTabAtIndex:(NSUInteger)index {
+    if (index >= self.sessions.count)
+        return;
+    TerminalSession *session = self.sessions[index];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Rename Tab"
+                                                                   message:@"Leave it empty to name the tab after where its shell is."
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField *field) {
+        field.text = session.name;
+        field.placeholder = [self.class tabTitleForTerminal:session.terminal];
+        field.clearButtonMode = UITextFieldViewModeWhileEditing;
+        field.autocapitalizationType = UITextAutocapitalizationTypeNone;
+        field.returnKeyType = UIReturnKeyDone;
+    }];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    UIAlertAction *rename = [UIAlertAction actionWithTitle:@"Rename" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        NSString *name = [alert.textFields.firstObject.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+        session.name = name.length > 0 ? name : nil;
+        [self updateTabs];
+    }];
+    [alert addAction:rename];
+    alert.preferredAction = rename;
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)newTab:(UIKeyCommand *)command {

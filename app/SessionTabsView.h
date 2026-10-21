@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sessionTabsViewDidAskForNewTab:(SessionTabsView *)view;
 - (void)sessionTabsView:(SessionTabsView *)view didSelectTabAtIndex:(NSUInteger)index;
 - (void)sessionTabsView:(SessionTabsView *)view didCloseTabAtIndex:(NSUInteger)index;
+- (void)sessionTabsView:(SessionTabsView *)view didAskToRenameTabAtIndex:(NSUInteger)index;
 @end
 
 // A floating row of Liquid Glass tabs, one per session, with a + button, like Ghostty's tab bar.

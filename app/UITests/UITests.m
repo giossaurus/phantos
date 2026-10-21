@@ -200,6 +200,37 @@
     XCTAssertFalse([[self viewportIn:app].value containsString:@"#"], @"%@", [self viewportIn:app].value);
 }
 
+- (void)testHoldingATabRenamesOrClosesIt {
+    XCUIApplication *app = [XCUIApplication new];
+    app.launchArguments = @[@"--ui-testing", @"--ui-testing-fresh-preferences"];
+    [app launch];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"❯" timeout:30]);
+
+    [[[self tabsIn:app] elementBoundByIndex:0] pressForDuration:1.2];
+    XCTAssertTrue([app.buttons[@"Rename Tab"] waitForExistenceWithTimeout:5]);
+    XCTAssertTrue(app.buttons[@"Close Tab"].exists);
+    [self attachScreenshotOf:app named:@"tab-menu"];
+    [app.buttons[@"Rename Tab"] tap];
+    XCUIElement *field = app.alerts.textFields.firstMatch;
+    XCTAssertTrue([field waitForExistenceWithTimeout:5]);
+    [field typeText:@"build"];
+    [app.alerts.buttons[@"Rename"] tap];
+    // The name sticks even when the shell moves elsewhere.
+    [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)] tap];
+    [app typeText:@"cd /tmp\n"];
+    [NSThread sleepForTimeInterval:2];
+    XCTAssertEqualObjects([[self tabsIn:app] elementBoundByIndex:0].label, @"Tab 1, build");
+
+    [app.buttons[@"New Tab"] tap];
+    XCTAssertEqual([self tabsIn:app].count, 2);
+    [[[self tabsIn:app] elementBoundByIndex:1] pressForDuration:1.2];
+    XCTAssertTrue([app.buttons[@"Close Tab"] waitForExistenceWithTimeout:5]);
+    [app.buttons[@"Close Tab"] tap];
+    NSPredicate *one = [NSPredicate predicateWithFormat:@"count == 1"];
+    XCTNSPredicateExpectation *expectation = [[XCTNSPredicateExpectation alloc] initWithPredicate:one object:[self tabsIn:app]];
+    XCTAssertEqual([XCTWaiter waitForExpectations:@[expectation] timeout:15], XCTWaiterResultCompleted);
+}
+
 - (void)testSettingsHaveNoAlternateIcons {
     // The alternate icons were iSH's community art; PhantOS has the one icon.
     XCUIApplication *app = [self launchIntoSettings];
