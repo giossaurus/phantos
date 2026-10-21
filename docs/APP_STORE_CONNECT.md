@@ -75,7 +75,7 @@ THE TERMINAL
 • Hardware keyboard shortcuts: ⌘T, ⌘W, ⌘1 to ⌘9
 
 THE SHELL
-• zsh with Oh My Zsh and Powerlevel10k, set up to start in under a second
+• zsh with Oh My Zsh and Powerlevel10k, set up to start fast
 • Neovim as the editor, with yank and paste through the iOS clipboard
 • Alpine Linux packages with apk: Python, Node.js, git, gcc, ssh and more
 
@@ -97,7 +97,7 @@ O TERMINAL
 • Atalhos de teclado físico: ⌘T, ⌘W, ⌘1 a ⌘9
 
 O SHELL
-• zsh com Oh My Zsh e Powerlevel10k, configurado para abrir em menos de um segundo
+• zsh com Oh My Zsh e Powerlevel10k, configurado para abrir rápido
 • Neovim como editor, copiando e colando pela área de transferência do iOS
 • Pacotes do Alpine Linux com o apk: Python, Node.js, git, gcc, ssh e muito mais
 
