@@ -15,12 +15,25 @@
 #import "CurrentRoot.h"
 #import "NSObject+SaneKVO.h"
 #import "LinuxInterop.h"
+#import "SessionTabsView.h"
+#import "Theme.h"
 #include "kernel/init.h"
 #include "kernel/task.h"
 #include "kernel/calls.h"
 #include "fs/devices.h"
+#include "fs/tty.h"
 
-@interface TerminalViewController () <UIGestureRecognizerDelegate>
+// One shell, in one tab.
+@interface TerminalSession : NSObject
+@property Terminal *terminal;
+@property int pid;
+// A name the user gave the tab; nil follows the shell's title.
+@property (nullable) NSString *name;
+@end
+@implementation TerminalSession
+@end
+
+@interface TerminalViewController () <UIGestureRecognizerDelegate, SessionTabsViewDelegate>
 
 @property UITapGestureRecognizer *tapRecognizer;
 @property (weak, nonatomic) IBOutlet TerminalView *termView;
@@ -48,6 +61,9 @@
 
 @property int sessionPid;
 @property (nonatomic) Terminal *sessionTerminal;
+// Every tab's session, in tab order; sessionTerminal is the one on screen.
+@property NSMutableArray<TerminalSession *> *sessions;
+@property SessionTabsView *tabsView;
 
 @property BOOL ignoreKeyboardMotion;
 @property (nonatomic) BOOL hasExternalKeyboard;
@@ -114,6 +130,8 @@
         [self.escapeKey setTitle:nil forState:UIControlStateNormal];
         [self.escapeKey setImage:[UIImage systemImageNamed:@"escape"] forState:UIControlStateNormal];
     }
+    [self useGlassForBar];
+    [self setUpTabs];
     
     [UserPreferences.shared observe:@[@"hideStatusBar"] options:0 owner:self usingBlock:^(typeof(self) self) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -154,13 +172,29 @@
     if (err < 0) {
         [self showMessage:@"could not start session"
                  subtitle:[NSString stringWithFormat:@"error code %d", err]];
+        return;
     }
+    TerminalSession *session = [TerminalSession new];
+    session.terminal = self.sessionTerminal;
+    session.pid = self.sessionPid;
+    if (self.sessions == nil)
+        self.sessions = [NSMutableArray new];
+    [self.sessions addObject:session];
+    [self updateTabs];
 }
 
 - (void)reconnectSessionFromTerminalUUID:(NSUUID *)uuid {
     self.sessionTerminal = [Terminal terminalWithUUID:uuid];
-    if (self.sessionTerminal == nil)
+    if (self.sessionTerminal == nil) {
         [self startNewSession];
+        return;
+    }
+    TerminalSession *session = [TerminalSession new];
+    session.terminal = self.sessionTerminal;
+    if (self.sessions == nil)
+        self.sessions = [NSMutableArray new];
+    [self.sessions addObject:session];
+    [self updateTabs];
 }
 
 - (NSUUID *)sessionTerminalUUID {
@@ -182,6 +216,13 @@
         return (int) PTR_ERR(tty);
     }
     self.sessionTerminal = terminal;
+    // Start the shell at the screen's size: at the default 80 columns, zsh pads its prompt for a
+    // wider screen than an iPhone's and leaves "#" marks behind once the real size arrives.
+    if (Terminal.lastColumns > 0) {
+        lock(&tty->lock);
+        tty_set_winsize(tty, (struct winsize_) {.col = Terminal.lastColumns, .row = Terminal.lastRows});
+        unlock(&tty->lock);
+    }
     NSString *stdioFile = [NSString stringWithFormat:@"/dev/pts/%d", tty->num];
     err = create_stdio(stdioFile.fileSystemRepresentation, TTY_PSEUDO_SLAVE_MAJOR, tty->num);
     if (err < 0)
@@ -231,10 +272,25 @@
 #if !ISH_LINUX
 - (void)processExited:(NSNotification *)notif {
     int pid = [notif.userInfo[@"pid"] intValue];
-    if (pid != self.sessionPid)
+    TerminalSession *exited = nil;
+    for (TerminalSession *session in self.sessions) {
+        if (session.pid == pid)
+            exited = session;
+    }
+    if (exited == nil)
         return;
 
-    [self.sessionTerminal destroy];
+    [exited.terminal destroy];
+    NSUInteger index = [self.sessions indexOfObject:exited];
+    [self.sessions removeObject:exited];
+    if (self.sessions.count > 0) {
+        // Other tabs remain: show a neighbour if the closed tab was on screen.
+        if (exited.terminal == self.sessionTerminal)
+            [self selectSessionAtIndex:MIN(index, self.sessions.count - 1)];
+        else
+            [self updateTabs];
+        return;
+    }
     // On iOS 13, there are multiple windows, so just close this one.
     if (@available(iOS 13, *)) {
         // On iPhone, destroying scenes will fail, but the error doesn't actually go to the error handler, which is really stupid. Apple doesn't fix bugs, so I'm forced to just add a check here.
@@ -288,6 +344,10 @@
         for (BarButton *button in self.barButtons) {
             button.keyAppearance = keyAppearance;
         }
+        NSString *cursor = UserPreferences.shared.palette.cursorColor;
+        UIColor *accent = cursor ? [[UIColor alloc] ish_initWithHexString:cursor] : nil;
+        if (accent)
+            self.tabsView.accentColor = accent;
         UIColor *tintColor = keyAppearance == UIKeyboardAppearanceLight ? UIColor.blackColor : UIColor.whiteColor;
         for (UIControl *control in self.barControls) {
             control.tintColor = tintColor;
@@ -483,6 +543,19 @@
                                  modifierFlags:UIKeyModifierCommand|UIKeyModifierAlternate|UIKeyModifierShift
                                         action:@selector(switchTerminal:)]];
         }
+        // Ghostty's tab shortcuts.
+        [commands addObject:[UIKeyCommand commandWithTitle:@"New Tab" image:nil action:@selector(newTab:)
+                                                     input:@"t" modifierFlags:UIKeyModifierCommand propertyList:nil]];
+        [commands addObject:[UIKeyCommand commandWithTitle:@"Close Tab" image:nil action:@selector(closeTab:)
+                                                     input:@"w" modifierFlags:UIKeyModifierCommand propertyList:nil]];
+        [commands addObject:[UIKeyCommand commandWithTitle:@"Previous Tab" image:nil action:@selector(previousTab:)
+                                                     input:@"[" modifierFlags:UIKeyModifierCommand | UIKeyModifierShift propertyList:nil]];
+        [commands addObject:[UIKeyCommand commandWithTitle:@"Next Tab" image:nil action:@selector(nextTab:)
+                                                     input:@"]" modifierFlags:UIKeyModifierCommand | UIKeyModifierShift propertyList:nil]];
+        for (unsigned i = 1; i <= 9; i++) {
+            [commands addObject:[UIKeyCommand commandWithTitle:[NSString stringWithFormat:@"Tab %u", i] image:nil action:@selector(selectTab:)
+                                                         input:[NSString stringWithFormat:@"%u", i] modifierFlags:UIKeyModifierCommand propertyList:nil]];
+        }
         [commands addObject:
          [UIKeyCommand keyCommandWithInput:@"+"
                              modifierFlags:UIKeyModifierCommand
@@ -509,6 +582,170 @@
                       discoverabilityTitle:@"Settings"]];
     }
     return commands;
+}
+
+#pragma mark Liquid Glass
+
+- (void)useGlassForBar {
+    // The keys float as glass capsules over whatever is behind the keyboard, instead of sitting on
+    // a keyboard-grey strip.
+    self.barView.backgroundColor = UIColor.clearColor;
+    self.barView.accessibilityIdentifier = @"keys.glass";
+    for (id control in [self.barButtons arrayByAddingObjectsFromArray:self.barControls]) {
+        if ([control respondsToSelector:@selector(useGlass)])
+            [control useGlass];
+    }
+    UIImageSymbolConfiguration *symbol = [[UIImageSymbolConfiguration configurationWithTextStyle:UIFontTextStyleBody scale:UIImageSymbolScaleMedium]
+        configurationByApplyingConfiguration:[UIImageSymbolConfiguration configurationWithWeight:UIImageSymbolWeightSemibold]];
+    for (UIButton *button in @[self.infoButton, self.pasteButton, self.hideKeyboardButton]) {
+        UIButtonConfiguration *configuration = [UIButtonConfiguration glassButtonConfiguration];
+        configuration.image = [button imageForState:UIControlStateNormal];
+        configuration.preferredSymbolConfigurationForImage = symbol;
+        configuration.baseForegroundColor = UIColor.labelColor;
+        configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+        button.configuration = configuration;
+    }
+    // 44 points, Apple's minimum for something you tap.
+    self.barHeight.constant = 44;
+    self.barButtonWidth.constant = 44;
+}
+
+#pragma mark Tabs
+
+- (void)setUpTabs {
+    self.tabsView = [SessionTabsView new];
+    self.tabsView.delegate = self;
+    self.tabsView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.tabsView];
+    // The terminal is pinned to the safe area; growing it at the top makes room for the tabs.
+    self.additionalSafeAreaInsets = UIEdgeInsetsMake(50, 0, 0, 0);
+    [NSLayoutConstraint activateConstraints:@[
+        [self.tabsView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor constant:8],
+        [self.tabsView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor constant:-8],
+        [self.tabsView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor constant:-4],
+        [self.tabsView.heightAnchor constraintEqualToConstant:44],
+    ]];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(terminalTitleDidChange:)
+                                               name:TerminalTitleDidChangeNotification
+                                             object:nil];
+    [self updateTabs];
+}
+
+- (void)terminalTitleDidChange:(NSNotification *)notification {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateTabs];
+    });
+}
+
+// powerlevel10k titles a shell "user@host:~"; the tab shows where it is.
++ (NSString *)tabTitleForTerminal:(Terminal *)terminal {
+    NSString *title = terminal.title;
+    if (title.length == 0)
+        return @"shell";
+    NSRange separator = [title rangeOfString:@":" options:NSBackwardsSearch];
+    if (separator.location != NSNotFound && NSMaxRange(separator) < title.length)
+        title = [title substringFromIndex:NSMaxRange(separator)];
+    return [title stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+}
+
+- (void)updateTabs {
+    if (self.tabsView == nil)
+        return;
+    NSMutableArray<NSString *> *titles = [NSMutableArray new];
+    NSUInteger selected = 0;
+    for (NSUInteger i = 0; i < self.sessions.count; i++) {
+        [titles addObject:self.sessions[i].name ?: [self.class tabTitleForTerminal:self.sessions[i].terminal]];
+        if (self.sessions[i].terminal == self.sessionTerminal)
+            selected = i;
+    }
+    [self.tabsView setTitles:titles selectedIndex:selected];
+}
+
+- (void)selectSessionAtIndex:(NSUInteger)index {
+    if (index >= self.sessions.count)
+        return;
+    TerminalSession *session = self.sessions[index];
+    _sessionTerminal = session.terminal;
+    self.sessionPid = session.pid;
+    self.terminal = session.terminal;
+    [self updateTabs];
+}
+
+- (void)closeSessionAtIndex:(NSUInteger)index {
+    if (index >= self.sessions.count)
+        return;
+    // Hanging up the tty ends the shell; processExited: then removes the tab.
+    [self.sessions[index].terminal destroy];
+}
+
+- (NSUInteger)selectedSessionIndex {
+    for (NSUInteger i = 0; i < self.sessions.count; i++) {
+        if (self.sessions[i].terminal == self.sessionTerminal)
+            return i;
+    }
+    return 0;
+}
+
+- (void)sessionTabsViewDidAskForNewTab:(SessionTabsView *)view {
+    [self startNewSession];
+}
+
+- (void)sessionTabsView:(SessionTabsView *)view didSelectTabAtIndex:(NSUInteger)index {
+    [self selectSessionAtIndex:index];
+}
+
+- (void)sessionTabsView:(SessionTabsView *)view didCloseTabAtIndex:(NSUInteger)index {
+    [self closeSessionAtIndex:index];
+}
+
+- (void)sessionTabsView:(SessionTabsView *)view didAskToRenameTabAtIndex:(NSUInteger)index {
+    if (index >= self.sessions.count)
+        return;
+    TerminalSession *session = self.sessions[index];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Rename Tab"
+                                                                   message:@"Leave it empty to name the tab after where its shell is."
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField *field) {
+        field.text = session.name;
+        field.placeholder = [self.class tabTitleForTerminal:session.terminal];
+        field.clearButtonMode = UITextFieldViewModeWhileEditing;
+        field.autocapitalizationType = UITextAutocapitalizationTypeNone;
+        field.returnKeyType = UIReturnKeyDone;
+    }];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    UIAlertAction *rename = [UIAlertAction actionWithTitle:@"Rename" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        NSString *name = [alert.textFields.firstObject.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+        session.name = name.length > 0 ? name : nil;
+        [self updateTabs];
+    }];
+    [alert addAction:rename];
+    alert.preferredAction = rename;
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)newTab:(UIKeyCommand *)command {
+    [self startNewSession];
+}
+
+- (void)closeTab:(UIKeyCommand *)command {
+    [self closeSessionAtIndex:self.selectedSessionIndex];
+}
+
+- (void)selectTab:(UIKeyCommand *)command {
+    [self selectSessionAtIndex:(NSUInteger) command.input.integerValue - 1];
+}
+
+- (void)previousTab:(UIKeyCommand *)command {
+    NSUInteger count = self.sessions.count;
+    if (count > 0)
+        [self selectSessionAtIndex:(self.selectedSessionIndex + count - 1) % count];
+}
+
+- (void)nextTab:(UIKeyCommand *)command {
+    NSUInteger count = self.sessions.count;
+    if (count > 0)
+        [self selectSessionAtIndex:(self.selectedSessionIndex + 1) % count];
 }
 
 - (void)setTerminal:(Terminal *)terminal {

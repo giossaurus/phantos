@@ -18,3 +18,9 @@ fastlane/screenshots
 fastlane/test_output
 
 e2e_out/
+
+# Local tooling
+.claude/
+CLAUDE.md
+.cursor/
+app/Local.xcconfig

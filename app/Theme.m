@@ -255,6 +255,28 @@ char *(*get_documents_directory)(void);
     static NSArray<Theme *> *defaultThemes;
     if (!defaultThemes) {
         defaultThemes = @[
+            // PhantOS's own theme, from the banner and the icon: graphite with the ghost's green,
+            // teal and purple. The light palette darkens them to keep text legible.
+            [[self alloc] initWithName:@"PhantOS"
+                          lightPalette:[[Palette alloc] initWithForegroundColor:@"#24242e"
+                                                                backgroundColor:@"#f6f6fa"
+                                                                    cursorColor:@"#1f9d6a"
+                                                          colorPaletteOverrides:@[
+                            @"#24242e", @"#d1345b", @"#1f9d6a", @"#a8760a",
+                            @"#2b7fb8", @"#8a3fd1", @"#148a80", @"#b8b8c8",
+                            @"#6a6a7a", @"#e2577a", @"#2fb37f", @"#c08a12",
+                            @"#4597cf", @"#a35ee0", @"#22a095", @"#ffffff",
+                          ]]
+                           darkPalette:[[Palette alloc] initWithForegroundColor:@"#e6e6f0"
+                                                                backgroundColor:@"#13131a"
+                                                                    cursorColor:@"#50faa0"
+                                                          colorPaletteOverrides:@[
+                            @"#1e1e28", @"#ff6b8a", @"#50faa0", @"#f5d76e",
+                            @"#6ebeeb", @"#be6efa", @"#64e1d2", @"#d0d0dc",
+                            @"#4a4a5a", @"#ff8aa3", @"#7dffbe", @"#ffe58f",
+                            @"#94d2f5", @"#d49bff", @"#8cf0e3", @"#ffffff",
+                          ]]
+                            appearance:nil],
             [[self alloc] initWithName:@"Default"
                           lightPalette:[[Palette alloc] initWithForegroundColor:@"#000"
                                                                 backgroundColor:@"#fff"
@@ -316,6 +338,51 @@ char *(*get_documents_directory)(void);
                            ]]
                             appearance:nil
             ],
+            // Dracula, Catppuccin and Cursor Dark as Ghostty ships them, from
+            // iTerm2-Color-Schemes (MIT).
+            [[self alloc] initWithName:@"Dracula"
+                               palette:[[Palette alloc] initWithForegroundColor:@"#f8f8f2"
+                                                                backgroundColor:@"#282a36"
+                                                                    cursorColor:@"#f8f8f2"
+                                                          colorPaletteOverrides:@[
+                            @"#21222c", @"#ff5555", @"#50fa7b", @"#f1fa8c",
+                            @"#bd93f9", @"#ff79c6", @"#8be9fd", @"#f8f8f2",
+                            @"#6272a4", @"#ff6e6e", @"#69ff94", @"#ffffa5",
+                            @"#d6acff", @"#ff92df", @"#a4ffff", @"#ffffff",
+                          ]]
+                            appearance:ThemeAppearance.alwaysDark],
+            // Latte in light mode, Mocha in dark mode.
+            [[self alloc] initWithName:@"Catppuccin"
+                          lightPalette:[[Palette alloc] initWithForegroundColor:@"#4c4f69"
+                                                                backgroundColor:@"#eff1f5"
+                                                                    cursorColor:@"#dc8a78"
+                                                          colorPaletteOverrides:@[
+                            @"#5c5f77", @"#d20f39", @"#40a02b", @"#df8e1d",
+                            @"#1e66f5", @"#ea76cb", @"#179299", @"#acb0be",
+                            @"#6c6f85", @"#de293e", @"#49af3d", @"#eea02d",
+                            @"#456eff", @"#fe85d8", @"#2d9fa8", @"#bcc0cc",
+                          ]]
+                           darkPalette:[[Palette alloc] initWithForegroundColor:@"#cdd6f4"
+                                                                backgroundColor:@"#1e1e2e"
+                                                                    cursorColor:@"#f5e0dc"
+                                                          colorPaletteOverrides:@[
+                            @"#45475a", @"#f38ba8", @"#a6e3a1", @"#f9e2af",
+                            @"#89b4fa", @"#f5c2e7", @"#94e2d5", @"#a6adc8",
+                            @"#585b70", @"#f37799", @"#89d88b", @"#ebd391",
+                            @"#74a8fc", @"#f2aede", @"#6bd7ca", @"#bac2de",
+                          ]]
+                            appearance:nil],
+            [[self alloc] initWithName:@"Cursor Dark"
+                               palette:[[Palette alloc] initWithForegroundColor:@"#d4d4d4"
+                                                                backgroundColor:@"#141414"
+                                                                    cursorColor:@"#d4d4d4"
+                                                          colorPaletteOverrides:@[
+                            @"#242424", @"#fc6b83", @"#3fa266", @"#d2943e",
+                            @"#81a1c1", @"#b48ead", @"#88c0d0", @"#e4e4e4",
+                            @"#4a4a4a", @"#fc6b83", @"#70b489", @"#f1b467",
+                            @"#87a6c4", @"#b48ead", @"#88c0d0", @"#e4e4e4",
+                          ]]
+                            appearance:ThemeAppearance.alwaysDark],
             // Because this is a hidden theme, it needs to be last. There's
             // logic in UserPreferences and ThemesViewController which will not
             // work correctly otherwise.

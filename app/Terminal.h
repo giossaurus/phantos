@@ -9,8 +9,19 @@
 #import <WebKit/WebKit.h>
 
 struct tty;
+@class GhosttyTerminalHost;
 
 @interface Terminal : NSObject
+
+// Ghostty draws the terminal unless the UseHterm default is set.
+@property (class, readonly) BOOL usesGhostty;
+@property (readonly) GhosttyTerminalHost *ghostty;
+// The grid the last Ghostty surface settled at, kept across launches, so a new session's tty can
+// start at the screen's size instead of 80 columns. 0 when nothing has been measured yet.
+@property (class, readonly) int lastColumns;
+@property (class, readonly) int lastRows;
+// What the program running in it calls itself (OSC 0/2). TerminalTitleDidChangeNotification follows changes.
+@property (readonly, nullable) NSString *title;
 
 + (Terminal *)terminalWithType:(int)type number:(int)number;
 #if !ISH_LINUX
@@ -39,3 +50,4 @@ struct tty;
 @end
 
 extern struct tty_driver ios_console_driver;
+extern NSString *const TerminalTitleDidChangeNotification;

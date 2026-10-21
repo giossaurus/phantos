@@ -1,0 +1,6 @@
+The Linux filesystem that comes with PhantOS is built from Alpine Linux packages (https://alpinelinux.org). Each package is distributed under its own license, which you can see in PhantOS with:
+
+    apk info -a <package>
+
+The source code of every Alpine package is at:
+https://gitlab.alpinelinux.org/alpine/aports

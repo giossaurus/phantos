@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>Detail</key>
+		<string>giossaurus · GPLv3</string>
+		<key>File</key>
+		<string>PhantOS.txt</string>
+		<key>Name</key>
+		<string>PhantOS</string>
+	</dict>
+	<dict>
+		<key>Detail</key>
+		<string>Theodore Dubois, Saagar Jha and contributors · GPLv3</string>
+		<key>File</key>
+		<string>iSH.txt</string>
+		<key>Name</key>
+		<string>iSH</string>
+	</dict>
+	<dict>
+		<key>Detail</key>
+		<string>Mitchell Hashimoto and contributors · MIT</string>
+		<key>File</key>
+		<string>Ghostty.txt</string>
+		<key>Name</key>
+		<string>Ghostty</string>
+	</dict>
+	<dict>
+		<key>Detail</key>
+		<string>Lakr233 · MIT</string>
+		<key>File</key>
+		<string>GhosttyKit.txt</string>
+		<key>Name</key>
+		<string>GhosttyKit</string>
+	</dict>
+	<dict>
+		<key>Detail</key>
+		<string>The Chromium OS Authors · BSD 3-Clause</string>
+		<key>File</key>
+		<string>hterm.txt</string>
+		<key>Name</key>
+		<string>hterm</string>
+	</dict>
+	<dict>
+		<key>Detail</key>
+		<string>Tim Kientzle and contributors · BSD 2-Clause</string>
+		<key>File</key>
+		<string>libarchive.txt</string>
+		<key>Name</key>
+		<string>libarchive</string>
+	</dict>
+	<dict>
+		<key>Detail</key>
+		<string>Paul Falstad and the zsh contributors · zsh license</string>
+		<key>File</key>
+		<string>zsh.txt</string>
+		<key>Name</key>
+		<string>zsh</string>
+	</dict>
+	<dict>
+		<key>Detail</key>
+		<string>Robby Russell and contributors · MIT</string>
+		<key>File</key>
+		<string>OhMyZsh.txt</string>
+		<key>Name</key>
+		<string>Oh My Zsh</string>
+	</dict>
+	<dict>
+		<key>Detail</key>
+		<string>Roman Perepelitsa and contributors · MIT</string>
+		<key>File</key>
+		<string>Powerlevel10k.txt</string>
+		<key>Name</key>
+		<string>Powerlevel10k</string>
+	</dict>
+	<dict>
+		<key>Detail</key>
+		<string>Neovim contributors · Apache 2.0 and Vim license</string>
+		<key>File</key>
+		<string>Neovim.txt</string>
+		<key>Name</key>
+		<string>Neovim</string>
+	</dict>
+	<dict>
+		<key>Detail</key>
+		<string>Alpine Linux and package authors · per package</string>
+		<key>File</key>
+		<string>Alpine.txt</string>
+		<key>Name</key>
+		<string>Alpine Linux</string>
+	</dict>
+	<dict>
+		<key>Detail</key>
+		<string>iTerm2-Color-Schemes, Dracula, Catppuccin · MIT</string>
+		<key>File</key>
+		<string>ColorSchemes.txt</string>
+		<key>Name</key>
+		<string>Terminal color schemes</string>
+	</dict>
+</array>
+</plist>

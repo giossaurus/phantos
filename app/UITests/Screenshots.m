@@ -1,13 +1,13 @@
 //
 //  Screenshots.m
-//  iSHUITests
+//  PhantOSUITests
 //
 //  Created by Theodore Dubois on 12/18/20.
 //
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
-#import "iSHUITests-Swift.h"
+#import "PhantOSUITests-Swift.h"
 
 @interface Screenshots : XCTestCase
 
@@ -87,9 +87,9 @@
 
 - (void)testLanguages {
     [self runCommand:@"apk add build-base python3" timeout:120];
-    [self runCommand:@"printf '#include <stdio.h>\\nint main() { printf(\"Hello, iSH!\\\\n\"); }' > hello.c" timeout:5];
+    [self runCommand:@"printf '#include <stdio.h>\\nint main() { printf(\"Hello, PhantOS!\\\\n\"); }' > hello.c" timeout:5];
     [self runCommand:@"gcc hello.c && ./a.out" timeout:5];
-    [self runCommand:@"python3 -c 'print(\"Hello, iSH!\")'" timeout:5];
+    [self runCommand:@"python3 -c 'print(\"Hello, PhantOS!\")'" timeout:5];
     [self snapshot:@"languages" order:2];
 }
 

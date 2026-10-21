@@ -10,6 +10,7 @@
 #import "UserPreferences.h"
 #import "UIApplication+OpenURL.h"
 #import "NSObject+SaneKVO.h"
+#import "libiSHApp-Swift.h"
 
 struct rowcol {
     int row;
@@ -45,6 +46,9 @@ struct rowcol {
 @property struct rowcol floatingCursor;
 @property CGSize floatingCursorSensitivity;
 @property CGSize actualFloatingCursorSensitivity;
+
+@property (nullable) UIView *viewportAccessibilityView;
+@property (nullable) UIView *styleAccessibilityView;
 
 @end
 
@@ -111,6 +115,24 @@ static NSString *const HANDLERS[] = {@"syncFocus", @"focus", @"newScrollHeight",
 
 - (void)installTerminalView {
     NSAssert(_terminal.loaded, @"should probably not be installing a non-loaded terminal");
+    if (_terminal.ghostty) {
+        UIView *surface = _terminal.ghostty.view;
+        if (surface.superview == self)
+            return;
+        NSAssert(surface.superview == nil, @"installing terminal that is already installed elsewhere");
+        surface.frame = self.bounds;
+        surface.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        self.opaque = NO;
+        self.scrollbarView.hidden = YES;
+        [self addSubview:surface];
+        self.viewportAccessibilityView = [_terminal.ghostty makeViewportAccessibilityView];
+        if (self.viewportAccessibilityView)
+            [self addSubview:self.viewportAccessibilityView];
+        self.styleAccessibilityView = [_terminal.ghostty makeStyleAccessibilityView];
+        if (self.styleAccessibilityView)
+            [self addSubview:self.styleAccessibilityView];
+        return;
+    }
     UIView *superview = self.terminal.webView.superview;
     if (superview != nil) {
         NSAssert(superview == self.scrollbarView, @"installing terminal that is already installed elsewhere");
@@ -137,6 +159,16 @@ static NSString *const HANDLERS[] = {@"syncFocus", @"focus", @"newScrollHeight",
 }
 
 - (void)uninstallTerminalView {
+    if (_terminal.ghostty) {
+        if (_terminal.ghostty.view.superview == self)
+            [_terminal.ghostty.view removeFromSuperview];
+        [self.viewportAccessibilityView removeFromSuperview];
+        self.viewportAccessibilityView = nil;
+        [self.styleAccessibilityView removeFromSuperview];
+        self.styleAccessibilityView = nil;
+        self.scrollbarView.hidden = NO;
+        return;
+    }
     // remove old terminal
     UIView *superview = _terminal.webView.superview;
     if (superview != self.scrollbarView) {
@@ -176,6 +208,15 @@ static NSString *const HANDLERS[] = {@"syncFocus", @"focus", @"newScrollHeight",
     if (prefs.palette.colorPaletteOverrides) {
         themeInfo[@"colorPaletteOverrides"] = palette.colorPaletteOverrides;
     }
+    if (self.terminal.ghostty) {
+        [self.terminal.ghostty setFontFamily:prefs.fontFamily
+                                        size:self.effectiveFontSize
+                                  foreground:palette.foregroundColor
+                                  background:palette.backgroundColor
+                                      cursor:palette.cursorColor
+                                     palette:palette.colorPaletteOverrides];
+        return;
+    }
     NSString *json = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:themeInfo options:0 error:nil] encoding:NSUTF8StringEncoding];
     [self.terminal.webView evaluateJavaScript:[NSString stringWithFormat:@"exports.updateStyle(%@)", json] completionHandler:^(id result, NSError *error){
         [self updateFloatingCursorSensitivity];
@@ -202,6 +243,8 @@ static NSString *const HANDLERS[] = {@"syncFocus", @"focus", @"newScrollHeight",
 
 - (void)setTerminalFocused:(BOOL)terminalFocused {
     _terminalFocused = terminalFocused;
+    if (self.terminal.ghostty)
+        return;
     NSString *script = terminalFocused ? @"exports.setFocused(true)" : @"exports.setFocused(false)";
     [self.terminal.webView evaluateJavaScript:script completionHandler:nil];
 }

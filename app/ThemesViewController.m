@@ -136,7 +136,7 @@ enum {
         case DefaultSection:
             return self->_preferUserTheme ? [NSString stringWithFormat:@"The default theme \"%@\" is currently being overridden by a user theme.", self->_theme.name] : nil;
         case ImportSection:
-            return @"User themes are stored in the iSH documents directory, under the \"themes\" folder. You can access them within iSH by running\n\n# mount -t real \"$(cat /proc/ish/documents)/themes\" [folder]\n\nand manipulating them from there.";
+            return @"User themes are stored in the PhantOS documents directory, under the \"themes\" folder. You can access them within PhantOS by running\n\n# mount -t real \"$(cat /proc/ish/documents)/themes\" [folder]\n\nand manipulating them from there.";
         default:
             return nil;
     }

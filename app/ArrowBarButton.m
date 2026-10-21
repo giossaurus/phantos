@@ -16,6 +16,7 @@
 @property (nonatomic) ArrowDirection direction;
 @property BOOL accessibilityUpDown;
 @property NSTimer *timer;
+@property BOOL usesGlass;
 
 @end
 
@@ -207,7 +208,30 @@ static CGPoint anchors[] = {
         return [UIColor colorWithRed:147/255. green:147/255. blue:147/255. alpha:66/255.];
 }
 
+- (void)useGlass {
+    UIGlassEffect *effect = [UIGlassEffect effectWithStyle:UIGlassEffectStyleRegular];
+    effect.interactive = YES;
+    UIVisualEffectView *glass = [[UIVisualEffectView alloc] initWithEffect:effect];
+    glass.cornerConfiguration = [UICornerConfiguration capsuleConfiguration];
+    // The control underneath tracks the drag.
+    glass.userInteractionEnabled = NO;
+    glass.frame = self.bounds;
+    glass.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self insertSubview:glass atIndex:0];
+    self.usesGlass = YES;
+    self.layer.shadowOpacity = 0;
+    [self setColors];
+}
+
 - (void)setColors {
+    if (self.usesGlass) {
+        self.backgroundColor = UIColor.clearColor;
+        CGColorRef label = [UIColor.labelColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+        for (int d = ArrowUp; d <= ArrowRight; d++)
+            ((CATextLayer *) arrowLayers[d]).foregroundColor = label;
+        [self animateLayerUpdates];
+        return;
+    }
     if (self.selected) {
         self.backgroundColor = self.highlightedColor;
     } else {
