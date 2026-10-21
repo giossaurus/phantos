@@ -67,6 +67,14 @@
     XCTAssertEqual(mentions.count, 0, @"still named iSH: %@", mentions);
 }
 
+- (void)testSettingsHaveNoAlternateIcons {
+    // The alternate icons were iSH's community art; PhantOS has the one icon.
+    XCUIApplication *app = [self launchIntoSettings];
+    NSSet<NSString *> *texts = [self settingsTextsIn:app];
+    XCTAssertTrue([texts containsObject:@"Appearance"], @"%@", texts);
+    XCTAssertFalse([texts containsObject:@"App Icon"], @"%@", texts);
+}
+
 - (void)testLicensesCreditISHUnderTheGPL {
     XCUIApplication *app = [self launchIntoSettings];
     XCUIElement *licenses = app.tables.firstMatch.staticTexts[@"Licenses & Credits"];
