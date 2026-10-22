@@ -291,6 +291,16 @@
     [self attachScreenshotOf:app named:@"selection"];
 }
 
+- (void)testVoiceOverCanReadTheTerminal {
+    // No UI testing switches: this is what VoiceOver gets in the shipping app.
+    XCUIApplication *app = [XCUIApplication new];
+    [app launch];
+    XCUIElement *terminal = [[app descendantsMatchingType:XCUIElementTypeAny] matchingIdentifier:@"terminal.surface"].firstMatch;
+    XCTAssertTrue([terminal waitForExistenceWithTimeout:20], @"the terminal isn't an accessibility element");
+    XCTAssertEqualObjects(terminal.label, @"Terminal");
+    XCTAssertTrue([self waitForElement:terminal valueContaining:@"PhantOS" timeout:30], @"%@", terminal.value);
+}
+
 - (void)testSettingsHaveNoAlternateIcons {
     // The alternate icons were iSH's community art; PhantOS has the one icon.
     XCUIApplication *app = [self launchIntoSettings];
@@ -366,7 +376,9 @@
     [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.3)] tap];
     // Let the keyboard settle the final grid before asking the tty.
     [NSThread sleepForTimeInterval:2];
-    [app typeText:@"stty size\n"];
+    // UI tests type as a hardware keyboard, which hides the on-screen one for about a second and
+    // grows the grid meanwhile; measure once it's back.
+    [app typeText:@"sleep 2; stty size\n"];
     // The value holds one line per visible row; the label ends with the column count.
     // Both are read from the same snapshot, since the grid shrinks while the keyboard slides in.
     NSString *columns = [viewport.label componentsSeparatedByString:@" "].lastObject;

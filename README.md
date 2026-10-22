@@ -6,7 +6,7 @@ PhantOS is a fork of [iSH](https://github.com/ish-app/ish). The emulator and the
 
 ## What PhantOS adds
 
-**Ghostty terminal.** The terminal is drawn by Ghostty's engine (libghostty, through [GhosttyKit](https://github.com/Lakr233/libghostty-spm)) instead of hterm in a web view. Text is sharp at any size, and colors follow Ghostty's themes.
+**Ghostty terminal.** The terminal is drawn by Ghostty's engine (libghostty, through [GhosttyKit](https://github.com/Lakr233/libghostty-spm)) instead of hterm in a web view. Text is sharp at any size, and colors follow Ghostty's themes. Drag to scroll back through output, double tap a word or triple tap a line to select and copy it, and pinch to zoom. VoiceOver reads the screen and speaks new output.
 
 **Tabs.** Each tab is its own shell session. Tap + to open one. Hold a tab to rename it or close it. Exiting a shell closes its tab. A tab is named after the directory its shell is in, unless you rename it.
 
@@ -110,9 +110,6 @@ The emulator comes from iSH, and its author describes it best: it isn't quite a 
 
 ## Not done yet
 
-- Scrolling and text selection on the Ghostty terminal
-- Arrow keys in programs that switch to application cursor mode, such as vim
-- VoiceOver for the Ghostty terminal
 - Split panes on iPad
 - Moving the root to Alpine 3.22, which also packages fastfetch
 
