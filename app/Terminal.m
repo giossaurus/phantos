@@ -247,6 +247,7 @@ static NSString *const kLastRowsKey = @"LastTerminalRows";
 #if !ISH_LINUX
     lock(&_dataLock);
     if (self.ghostty) {
+        [self noteCursorKeyMode:buf length:len];
         [self.ghostty receive:[NSData dataWithBytes:buf length:len]];
         unlock(&_dataLock);
         return len;
@@ -309,6 +310,33 @@ static NSString *const kLastRowsKey = @"LastTerminalRows";
     if (self.ghostty)
         return;
     [self.webView evaluateJavaScript:@"exports.scrollToBottom()" completionHandler:nil];
+}
+
+// hterm reported when a program switched the arrow keys to application mode (DECCKM, as vim
+// does); with Ghostty drawing, read the switch from the output. A sequence split across two
+// writes is missed, which programs that set the mode once at start don't do.
+- (void)noteCursorKeyMode:(const char *)buf length:(int)len {
+    for (int i = 0; i + 3 < len; i++) {
+        if (buf[i] != '\x1b' || buf[i + 1] != '[' || buf[i + 2] != '?')
+            continue;
+        // ESC [ ? Pm ; Pm ... h|l, where Pm 1 is DECCKM.
+        int j = i + 3;
+        BOOL mentionsCursorKeys = NO;
+        int param = 0;
+        while (j < len && ((buf[j] >= '0' && buf[j] <= '9') || buf[j] == ';')) {
+            if (buf[j] == ';') {
+                mentionsCursorKeys |= param == 1;
+                param = 0;
+            } else {
+                param = param * 10 + (buf[j] - '0');
+            }
+            j++;
+        }
+        mentionsCursorKeys |= param == 1;
+        if (j < len && mentionsCursorKeys && (buf[j] == 'h' || buf[j] == 'l'))
+            self.applicationCursor = buf[j] == 'h';
+        i = j;
+    }
 }
 
 - (NSString *)arrow:(char)direction {

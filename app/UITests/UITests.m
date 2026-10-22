@@ -231,6 +231,21 @@
     XCTAssertEqual([XCTWaiter waitForExpectations:@[expectation] timeout:15], XCTWaiterResultCompleted);
 }
 
+- (void)testArrowsFollowApplicationCursorMode {
+    XCUIApplication *app = [XCUIApplication new];
+    app.launchArguments = @[@"--ui-testing"];
+    [app launch];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"❯" timeout:30]);
+    [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)] tap];
+    [NSThread sleepForTimeInterval:1];
+    // vim and other full-screen programs switch the arrows to ESC O A with DECCKM (ESC [ ? 1 h).
+    [app typeText:@"printf '\\033[?1h'; cat -v\n"];
+    [NSThread sleepForTimeInterval:1];
+    [app typeKey:XCUIKeyboardKeyUpArrow modifierFlags:0];
+    [app typeText:@"\n"];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"^[OA" timeout:10], @"%@", [self viewportIn:app].value);
+}
+
 - (void)testSettingsHaveNoAlternateIcons {
     // The alternate icons were iSH's community art; PhantOS has the one icon.
     XCUIApplication *app = [self launchIntoSettings];
