@@ -231,6 +231,76 @@
     XCTAssertEqual([XCTWaiter waitForExpectations:@[expectation] timeout:15], XCTWaiterResultCompleted);
 }
 
+- (void)testArrowsFollowApplicationCursorMode {
+    XCUIApplication *app = [XCUIApplication new];
+    app.launchArguments = @[@"--ui-testing"];
+    [app launch];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"❯" timeout:30]);
+    [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)] tap];
+    [NSThread sleepForTimeInterval:1];
+    // vim and other full-screen programs switch the arrows to ESC O A with DECCKM (ESC [ ? 1 h).
+    [app typeText:@"printf '\\033[?1h'; cat -v\n"];
+    [NSThread sleepForTimeInterval:1];
+    [app typeKey:XCUIKeyboardKeyUpArrow modifierFlags:0];
+    [app typeText:@"\n"];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"^[OA" timeout:10], @"%@", [self viewportIn:app].value);
+}
+
+- (void)testSwipingScrollsBackThroughOutput {
+    XCUIApplication *app = [XCUIApplication new];
+    app.launchArguments = @[@"--ui-testing"];
+    [app launch];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"❯" timeout:30]);
+    [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)] tap];
+    [NSThread sleepForTimeInterval:1];
+    [app typeText:@"for i in $(seq 1 100); do echo line-$i; done\n"];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"line-100" timeout:30]);
+    XCTAssertFalse([[self viewportIn:app].value containsString:@"line-3\n"]);
+    // Pulling the text down brings back what scrolled off the top.
+    XCUICoordinate *top = [app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.2)];
+    XCUICoordinate *bottom = [app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.6)];
+    for (int i = 0; i < 8; i++)
+        [top pressForDuration:0.05 thenDragToCoordinate:bottom];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"line-3\n" timeout:10], @"%@", [self viewportIn:app].value);
+}
+
+- (void)testTappingTheTerminalBringsBackTheKeyboard {
+    XCUIApplication *app = [XCUIApplication new];
+    app.launchArguments = @[@"--ui-testing"];
+    [app launch];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"❯" timeout:30]);
+    XCUIElement *hide = app.buttons[@"Hide Keyboard"];
+    XCTAssertTrue([hide waitForExistenceWithTimeout:10]);
+    [hide tap];
+    NSPredicate *gone = [NSPredicate predicateWithFormat:@"exists == NO"];
+    XCTNSPredicateExpectation *hidden = [[XCTNSPredicateExpectation alloc] initWithPredicate:gone object:app.keyboards.firstMatch];
+    XCTAssertEqual([XCTWaiter waitForExpectations:@[hidden] timeout:5], XCTWaiterResultCompleted);
+    [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)] tap];
+    XCTAssertTrue([app.keyboards.firstMatch waitForExistenceWithTimeout:5], @"the keyboard didn't come back");
+}
+
+- (void)testDoubleTappingAWordOffersCopy {
+    XCUIApplication *app = [XCUIApplication new];
+    app.launchArguments = @[@"--ui-testing"];
+    [app launch];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"❯" timeout:30]);
+    // The banner's name sits in the first rows.
+    [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.3, 0.17)] doubleTap];
+    XCTAssertTrue([app.menuItems[@"Copy"] waitForExistenceWithTimeout:5] || [app.buttons[@"Copy"] waitForExistenceWithTimeout:1],
+                  @"no Copy after selecting a word");
+    [self attachScreenshotOf:app named:@"selection"];
+}
+
+- (void)testVoiceOverCanReadTheTerminal {
+    // No UI testing switches: this is what VoiceOver gets in the shipping app.
+    XCUIApplication *app = [XCUIApplication new];
+    [app launch];
+    XCUIElement *terminal = [[app descendantsMatchingType:XCUIElementTypeAny] matchingIdentifier:@"terminal.surface"].firstMatch;
+    XCTAssertTrue([terminal waitForExistenceWithTimeout:20], @"the terminal isn't an accessibility element");
+    XCTAssertEqualObjects(terminal.label, @"Terminal");
+    XCTAssertTrue([self waitForElement:terminal valueContaining:@"PhantOS" timeout:30], @"%@", terminal.value);
+}
+
 - (void)testSettingsHaveNoAlternateIcons {
     // The alternate icons were iSH's community art; PhantOS has the one icon.
     XCUIApplication *app = [self launchIntoSettings];
@@ -306,7 +376,9 @@
     [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.3)] tap];
     // Let the keyboard settle the final grid before asking the tty.
     [NSThread sleepForTimeInterval:2];
-    [app typeText:@"stty size\n"];
+    // UI tests type as a hardware keyboard, which hides the on-screen one for about a second and
+    // grows the grid meanwhile; measure once it's back.
+    [app typeText:@"sleep 2; stty size\n"];
     // The value holds one line per visible row; the label ends with the column count.
     // Both are read from the same snapshot, since the grid shrinks while the keyboard slides in.
     NSString *columns = [viewport.label componentsSeparatedByString:@" "].lastObject;

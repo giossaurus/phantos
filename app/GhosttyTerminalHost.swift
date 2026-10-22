@@ -20,6 +20,8 @@ public final class GhosttyTerminalHost: NSObject {
     @objc public var onResize: ((Int, Int) -> Void)?
     /// The title the program set (OSC 0/2), e.g. powerlevel10k's "user@host: ~". Called on the main thread.
     @objc public var onTitle: ((String) -> Void)?
+    /// A clean tap on the surface, where Ghostty would toggle the keyboard that TerminalView owns.
+    @objc public var onToggleKeyboard: (() -> Void)?
     @objc public private(set) var columns = 0
     @objc public private(set) var rows = 0
 
@@ -63,8 +65,16 @@ public final class GhosttyTerminalHost: NSObject {
     private let controller = TerminalController { $0.withBackgroundOpacity(0) }
 
     private lazy var surfaceView: SurfaceView = {
+        // The surface takes touches, for scrolling, selection and pinch to zoom; the keyboard
+        // stays with TerminalView.
         let view = SurfaceView(frame: .zero)
-        view.isUserInteractionEnabled = false
+        view.toggleKeyboard = { [weak self] in self?.onToggleKeyboard?() }
+        // VoiceOver reads the visible text, as it did with hterm.
+        view.isAccessibilityElement = true
+        view.accessibilityIdentifier = "terminal.surface"
+        view.accessibilityLabel = "Terminal"
+        view.accessibilityTraits = [.staticText, .updatesFrequently]
+        view.visibleText = { [session] in session.readViewportText() ?? "" }
         view.backgroundColor = .clear
         view.isOpaque = false
         view.configuration = TerminalSurfaceOptions(backend: .inMemory(session))
@@ -78,6 +88,56 @@ public final class GhosttyTerminalHost: NSObject {
     /// Safe to call from any thread: the session parses on its own queue.
     @objc public nonisolated func receive(_ data: Data) {
         session.receive(data)
+        if Self.voiceOverRunning {
+            DispatchQueue.main.async { [weak self] in
+                MainActor.assumeIsolated { self?.scheduleAnnouncement() }
+            }
+        }
+    }
+
+    // MARK: VoiceOver
+
+    /// Read off the main thread for every write, so kept as a plain flag rather than asked of UIKit.
+    private nonisolated(unsafe) static var voiceOverRunning = UIAccessibility.isVoiceOverRunning
+    private static let voiceOverObserver = NotificationCenter.default.addObserver(
+        forName: UIAccessibility.voiceOverStatusDidChangeNotification, object: nil, queue: .main
+    ) { _ in
+        voiceOverRunning = UIAccessibility.isVoiceOverRunning
+    }
+
+    private var pendingAnnouncement: DispatchWorkItem?
+    private var announcedLines: [String] = []
+
+    /// Once output pauses, VoiceOver speaks the lines that arrived since it last spoke, the way
+    /// hterm announced output.
+    private func scheduleAnnouncement() {
+        _ = Self.voiceOverObserver
+        pendingAnnouncement?.cancel()
+        let announce = DispatchWorkItem { [weak self] in
+            guard let self else { return }
+            let lines = (session.readViewportText() ?? "").components(separatedBy: "\n")
+            let fresh = Self.linesAdded(from: announcedLines, to: lines)
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+                .filter { !$0.isEmpty }
+            announcedLines = lines
+            guard !fresh.isEmpty else { return }
+            UIAccessibility.post(notification: .announcement, argument: String(fresh.joined(separator: "\n").suffix(500)))
+        }
+        pendingAnnouncement = announce
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: announce)
+    }
+
+    /// The rows of `current` that weren't on screen in `previous`, allowing for the text having
+    /// scrolled up. A cleared screen counts as all new.
+    nonisolated static func linesAdded(from previous: [String], to current: [String]) -> [String] {
+        let previous = Array(previous.reversed().drop { $0.trimmingCharacters(in: .whitespaces).isEmpty }.reversed())
+        for shift in 0 ..< previous.count {
+            let kept = previous[shift...]
+            if current.count >= kept.count, Array(current.prefix(kept.count)) == Array(kept) {
+                return Array(current.dropFirst(kept.count))
+            }
+        }
+        return current
     }
 
     /// What the surface was last styled with, as Ghostty config lines; UI tests read it.
@@ -135,9 +195,21 @@ private final class Relay: @unchecked Sendable {
     weak var host: GhosttyTerminalHost?
 }
 
-/// Never takes the keyboard from TerminalView.
+/// Never takes the keyboard from TerminalView; a tap hands the keyboard toggle back to it.
 private final class SurfaceView: UITerminalView {
+    var toggleKeyboard: (() -> Void)?
+    var visibleText: (() -> String)?
+
+    override var accessibilityValue: String? {
+        get { visibleText?() ?? super.accessibilityValue }
+        set { super.accessibilityValue = newValue }
+    }
+
     override var canBecomeFirstResponder: Bool { false }
+
+    override func toggleSoftwareKeyboard() {
+        toggleKeyboard?()
+    }
 
     override func layoutSubviews() {
         super.layoutSubviews()

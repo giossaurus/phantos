@@ -6,7 +6,7 @@ PhantOS is a fork of [iSH](https://github.com/ish-app/ish). The emulator and the
 
 ## What PhantOS adds
 
-**Ghostty terminal.** The terminal is drawn by Ghostty's engine (libghostty, through [GhosttyKit](https://github.com/Lakr233/libghostty-spm)) instead of hterm in a web view. Text is sharp at any size, and colors follow Ghostty's themes.
+**Ghostty terminal.** The terminal is drawn by Ghostty's engine (libghostty, through [GhosttyKit](https://github.com/Lakr233/libghostty-spm)) instead of hterm in a web view. Text is sharp at any size, and colors follow Ghostty's themes. Drag to scroll back through output, double tap a word or triple tap a line to select and copy it, and pinch to zoom. VoiceOver reads the screen and speaks new output.
 
 **Tabs.** Each tab is its own shell session. Tap + to open one. Hold a tab to rename it or close it. Exiting a shell closes its tab. A tab is named after the directory its shell is in, unless you rename it.
 
@@ -56,7 +56,7 @@ Open `PhantOS.xcodeproj` and run the `PhantOS` scheme. To build under your own A
 
 The app bundles an Alpine root filesystem, built by [phantos-roots](https://github.com/giossaurus/phantos-roots). That repository adds zsh, the banner and Neovim to Alpine.
 
-By default the build downloads the root from `ROOTFS_URL` in `app/iSH.xcconfig`. To bundle a root you built yourself, run `./build.sh` in phantos-roots, then copy `app/Local.xcconfig.example` to `app/Local.xcconfig` and point `ROOTFS_FILE` at `out/appstore-apk.tar.gz`. `app/Local.xcconfig` stays out of git.
+The build downloads the root from the phantos-roots release named by `ROOTFS_URL` in `app/iSH.xcconfig`. To try a root you built yourself, run `./build.sh` in phantos-roots, then copy `app/Local.xcconfig.example` to `app/Local.xcconfig` and point `ROOTFS_FILE` at `out/appstore-apk.tar.gz`. `app/Local.xcconfig` stays out of git.
 
 The app imports the root the first time it opens. An installed copy keeps its filesystem, so delete and reinstall the app to try a new root.
 
@@ -83,6 +83,11 @@ Turn an Alpine root into a filesystem the emulator can use, and run a shell in i
 - **App:** the `PhantOSUITests` target, run from the `PhantOS` scheme. The tests cover the Ghostty terminal, tabs, themes, the banner, Settings and the licenses screen.
 - **Filesystem import:** `meson test -C build fakefsify-utf8` checks that file names that aren't ASCII import correctly.
 - **Root:** `./test.sh out/appstore-apk.tar.gz <ish build dir>` in phantos-roots boots the root in the emulator and checks the shell, the banner, Neovim and start-up time.
+- **App Store readiness:** `tests/app-store-readiness.bash <path to PhantOS.app>` checks a built app for privacy manifests, the version, the bundled root, and the privacy and support pages.
+
+## Privacy and support
+
+PhantOS collects no data. See [PRIVACY.md](PRIVACY.md) and [SUPPORT.md](SUPPORT.md).
 
 ## Logging
 
@@ -105,9 +110,6 @@ The emulator comes from iSH, and its author describes it best: it isn't quite a 
 
 ## Not done yet
 
-- Scrolling and text selection on the Ghostty terminal
-- Arrow keys in programs that switch to application cursor mode, such as vim
-- VoiceOver for the Ghostty terminal
 - Split panes on iPad
 - Moving the root to Alpine 3.22, which also packages fastfetch
 

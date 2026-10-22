@@ -104,9 +104,9 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     if (cell == self.sendFeedback) {
-        [UIApplication openURL:@"https://github.com/giossaurus/ish-gio/issues"];
+        [UIApplication openURL:@"https://github.com/giossaurus/phantos/issues"];
     } else if (cell == self.openSource) {
-        [UIApplication openURL:@"https://github.com/giossaurus/ish-gio"];
+        [UIApplication openURL:@"https://github.com/giossaurus/phantos"];
     } else if (cell == self.openUpstream) {
         [UIApplication openURL:@"https://github.com/ish-app/ish"];
     } else if (cell == self.openLicenses) {
