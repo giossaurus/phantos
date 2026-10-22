@@ -20,6 +20,8 @@ public final class GhosttyTerminalHost: NSObject {
     @objc public var onResize: ((Int, Int) -> Void)?
     /// The title the program set (OSC 0/2), e.g. powerlevel10k's "user@host: ~". Called on the main thread.
     @objc public var onTitle: ((String) -> Void)?
+    /// A clean tap on the surface, where Ghostty would toggle the keyboard that TerminalView owns.
+    @objc public var onToggleKeyboard: (() -> Void)?
     @objc public private(set) var columns = 0
     @objc public private(set) var rows = 0
 
@@ -63,8 +65,10 @@ public final class GhosttyTerminalHost: NSObject {
     private let controller = TerminalController { $0.withBackgroundOpacity(0) }
 
     private lazy var surfaceView: SurfaceView = {
+        // The surface takes touches, for scrolling, selection and pinch to zoom; the keyboard
+        // stays with TerminalView.
         let view = SurfaceView(frame: .zero)
-        view.isUserInteractionEnabled = false
+        view.toggleKeyboard = { [weak self] in self?.onToggleKeyboard?() }
         view.backgroundColor = .clear
         view.isOpaque = false
         view.configuration = TerminalSurfaceOptions(backend: .inMemory(session))
@@ -135,9 +139,15 @@ private final class Relay: @unchecked Sendable {
     weak var host: GhosttyTerminalHost?
 }
 
-/// Never takes the keyboard from TerminalView.
+/// Never takes the keyboard from TerminalView; a tap hands the keyboard toggle back to it.
 private final class SurfaceView: UITerminalView {
+    var toggleKeyboard: (() -> Void)?
+
     override var canBecomeFirstResponder: Bool { false }
+
+    override func toggleSoftwareKeyboard() {
+        toggleKeyboard?()
+    }
 
     override func layoutSubviews() {
         super.layoutSubviews()

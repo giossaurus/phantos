@@ -125,6 +125,13 @@ static NSString *const HANDLERS[] = {@"syncFocus", @"focus", @"newScrollHeight",
         self.opaque = NO;
         self.scrollbarView.hidden = YES;
         [self addSubview:surface];
+        __weak typeof(self) weakSelf = self;
+        // A tap raises the keyboard, as iSH always did; lowering it is the Hide Keyboard key's job,
+        // so a tap to focus never sends it away.
+        _terminal.ghostty.onToggleKeyboard = ^{
+            if (!weakSelf.isFirstResponder)
+                [weakSelf becomeFirstResponder];
+        };
         self.viewportAccessibilityView = [_terminal.ghostty makeViewportAccessibilityView];
         if (self.viewportAccessibilityView)
             [self addSubview:self.viewportAccessibilityView];

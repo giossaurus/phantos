@@ -246,6 +246,51 @@
     XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"^[OA" timeout:10], @"%@", [self viewportIn:app].value);
 }
 
+- (void)testSwipingScrollsBackThroughOutput {
+    XCUIApplication *app = [XCUIApplication new];
+    app.launchArguments = @[@"--ui-testing"];
+    [app launch];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"❯" timeout:30]);
+    [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)] tap];
+    [NSThread sleepForTimeInterval:1];
+    [app typeText:@"for i in $(seq 1 100); do echo line-$i; done\n"];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"line-100" timeout:30]);
+    XCTAssertFalse([[self viewportIn:app].value containsString:@"line-3\n"]);
+    // Pulling the text down brings back what scrolled off the top.
+    XCUICoordinate *top = [app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.2)];
+    XCUICoordinate *bottom = [app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.6)];
+    for (int i = 0; i < 8; i++)
+        [top pressForDuration:0.05 thenDragToCoordinate:bottom];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"line-3\n" timeout:10], @"%@", [self viewportIn:app].value);
+}
+
+- (void)testTappingTheTerminalBringsBackTheKeyboard {
+    XCUIApplication *app = [XCUIApplication new];
+    app.launchArguments = @[@"--ui-testing"];
+    [app launch];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"❯" timeout:30]);
+    XCUIElement *hide = app.buttons[@"Hide Keyboard"];
+    XCTAssertTrue([hide waitForExistenceWithTimeout:10]);
+    [hide tap];
+    NSPredicate *gone = [NSPredicate predicateWithFormat:@"exists == NO"];
+    XCTNSPredicateExpectation *hidden = [[XCTNSPredicateExpectation alloc] initWithPredicate:gone object:app.keyboards.firstMatch];
+    XCTAssertEqual([XCTWaiter waitForExpectations:@[hidden] timeout:5], XCTWaiterResultCompleted);
+    [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)] tap];
+    XCTAssertTrue([app.keyboards.firstMatch waitForExistenceWithTimeout:5], @"the keyboard didn't come back");
+}
+
+- (void)testDoubleTappingAWordOffersCopy {
+    XCUIApplication *app = [XCUIApplication new];
+    app.launchArguments = @[@"--ui-testing"];
+    [app launch];
+    XCTAssertTrue([self waitForElement:[self viewportIn:app] valueContaining:@"❯" timeout:30]);
+    // The banner's name sits in the first rows.
+    [[app.windows.firstMatch coordinateWithNormalizedOffset:CGVectorMake(0.3, 0.17)] doubleTap];
+    XCTAssertTrue([app.menuItems[@"Copy"] waitForExistenceWithTimeout:5] || [app.buttons[@"Copy"] waitForExistenceWithTimeout:1],
+                  @"no Copy after selecting a word");
+    [self attachScreenshotOf:app named:@"selection"];
+}
+
 - (void)testSettingsHaveNoAlternateIcons {
     // The alternate icons were iSH's community art; PhantOS has the one icon.
     XCUIApplication *app = [self launchIntoSettings];
